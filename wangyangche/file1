@@ -1,0 +1,76 @@
+a=10
+b=3.1415926
+s1='string';s2='s';s3='This is a string'
+bl=True;bl_1=False
+type(a) #<class 'int'>
+type(b) #<class 'float'>
+type(s1) #<class 'str'>
+type(bl) #<class 'bool'>
+x,y,z=1,0.23,1+2j  #int,float,complex
+class A:
+... 
+class B(A):
+... 
+isinstance(A(), A)
+True
+type(A()) == A 
+True
+isinstance(B(), A)
+True
+type(B()) == A
+False  #父类不行
+a=5.0/2  #a=2.5
+b=5/2  #b=2.5
+c=5.0//2 #c=2.0
+d=5//2 #d=2
+s1='abcdefghijk'
+print(s1)
+print(s1[0:-1])  #'abcdefghij'
+print(s1[3:5])  #'de' 
+print(s1[3:])  #'defghijk'
+print(s1*2)  #'abcdefghijkabcdefghijk'
+>>>print('abcd\nefg')
+abcd
+efg
+>>>print(r'abcd\nefg') #abcd\nefg
+a=True;b=False
+print(int(a))  #1
+print(int(b))  #0
+list1=['abcd',3.14159,8888,list2]
+list1[2]='abc'
+list2=['a','b','c','d','e','f','g']
+print(list2[0:5:2])  #['a','c','e']
+s='This is not a string'
+s=s.split(" ") #按照空格分割成列表
+s=s[-1::-1] #右边反转(新生成一个字符串)，再给左边赋值
+print(s) #string a not is This
+tup=('abcd',1234,0.5568)  #不能修改
+tup1=();tup2=(10,)  #空元组，一个元素元组
+sites={'a','a','c','d'}  #集合
+print(sites)  #{'a','c','d'}，重复删去
+a=set('abcdefg')
+b=set('abcd')
+print(a-b) #{'e','f','g'}差集
+print(a|b)  #{'a','b','c','d','e','f','g'}并集
+print(a&b) #{'a','b','c','d'}交集
+print(a^b) #{'e','f','g'}不同时存在
+dict={'name':'zhangsan','age':18,'gender':'男','id':'1234567',23:'no'} #字典
+print(dict['name']) #zhangsan
+print(dict[23]) #no
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
