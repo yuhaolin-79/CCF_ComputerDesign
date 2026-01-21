@@ -750,3 +750,668 @@ PEP8 是 Python Enhancement Proposal 8 的缩写，它是 Python 官方推荐的
   # 初始值设为10，兼容老版本接口的默认参数
   x = 10
   ```
+
+# `if`语句
+## 条件测试
+### 检查是否相等
+使用相等运算符`==`
+```
+>>> car = 'bmw'
+>>> car == 'bmw'
+True
+>>> car == 'audi'
+False
+```
+在检查相等时，忽略大小写
+```
+>>> car = 'Audi'
+>>> car == 'audi'
+False
+>>> car.lower() == 'audi'
+True
+```
+### 检查是否不等
+使用`!=`
+```python
+requested_topping = 'mushrooms'
+if requested_topping != 'anchovies':
+    print("Hold the anchovies!")
+```
+
+```
+Hold the anchovies!
+```
+
+### 数值比较
+```
+>>> age = 19
+>>> age == 19
+True
+>>> age != 9
+True
+>>> age > 8
+True
+>>> age >= 20
+False
+>>> age <= 19
+True
+```
+
+### 检查多个条件
+#### 1.使用`and`检查多个条件
+```
+>>> age_0 >= 21 and age_1 >= 21
+False
+>>> age_1 = 22
+>>> age_0 >= 21 and age_1 >= 21
+True
+```
+#### 2.使用`or`检查多个条件
+```
+>>> age_0 = 22
+>>> age_1 = 18
+>>> age_0 >= 21 or age_1 >= 21
+True
+>>> age_0 = 18
+>>> age_0 >= 21 or age_1 >= 21
+False
+```
+
+### 检查特定的值是否在列表中
+使用`in`
+```
+>>> requested_topping = ['mushrooms','onions','pineapple']
+>>> 'mushrooms' in requested_topping
+True
+>>> 'pepperoni' in requested_topping
+False
+```
+那么是否不在就使用`not in`
+```python
+banned_users = ['andrew','carolina','david']
+user = 'marie'
+
+if user not in banned_users:
+    print(f"{user.title()},you can post a response if you wish.")
+```
+
+```
+Marie,you can post a response if you wish.
+```
+
+### 布尔表达式
+在跟踪程序状态或程序中重要的条件方面，布尔值提供了一种高效的方式
+```python
+game_active = True
+can_edit = False
+```
+> **首字母大写哦**
+
+## `if`语句
+`if`语句和`if-else`语句都是很简单的，skip
+### `if-elif-else`
+```python
+age = 12
+if age < 4:
+    print("Your admission cost is $0.")
+elif age < 18:
+    print("Your admission cost is $25.")
+else:
+    print("Your admission cost is $40.")
+```
+
+为了让程序更简洁,可以统一出口
+```python
+age = 12
+if age < 4:
+    price = 0
+elif age < 18:
+    price = 25
+else:
+    price = 40
+print(f"Your admission cost is ${price}")
+```
+可以使用多个`elif`，也可以省略`else`
+
+### 测试多个条件
+这需要多个独立的`if`语句。而不是使用`if-elif-else`语句（这会导致，只要有一个成立，余下的不会执行）
+```python
+requested_topping = ['mushrooms','onions','pineapple']
+if 'mushrooms' in requested_topping:
+    print("Adding mushrooms")
+if 'pepperoni' in requested_topping:
+    print("Adding pepperoni")
+
+print("\nFinished making your pizza.")
+```
+
+## 使用`if`语句处理列表
+### 检查特殊元素
+```python
+requested_topping = ['mushrooms','onions','pineapple']
+if 'mushrooms' in requested_topping:
+    print("Adding mushrooms")
+if 'pepperoni' in requested_topping:
+    print("Adding pepperoni")  
+
+print("\nFinished making your pizza.")
+```
+
+```
+Adding mushrooms
+Adding onions
+Adding pineapple
+Sorry, we are out of green peppers.
+
+Finished making your pizza!
+```
+### 确定列表非空
+```python
+requested_toppings = []
+if requested_toppings:
+    for topping in requested_toppings:
+        if topping == 'green peppers':
+            print("Sorry, we are out of green peppers.")
+        else:
+            print(f"Adding {topping}")
+    print("\nFinished making your pizza!")
+else:
+    print("Are you sure you want a plain pizza?")
+```
+
+```
+Are you sure you want a plain pizza?
+```
+
+### 使用多个列表
+```python
+available_toppings = ['mushrooms','onions','pineapple',
+                      'pepperoni','olives','extra cheese']
+requested_toppings = ['mushrooms','french fries','extra cheese']
+for requested_topping in requested_toppings:
+    if requested_topping in available_toppings:
+        print(f"Adding {requested_topping}")
+    else:
+        print(f"Sorry, we don't have {requested_topping}")
+print("\nFinished making your pizza.")
+```
+
+```
+Adding mushrooms
+Sorry, we don't have french fries
+Adding extra cheese
+
+Finished making your pizza.
+```
+
+# 字典
+## 一个简单的字典
+```python
+alien_0 = {'color': 'green','points': 5}
+
+print(alien_0['color'])
+print(alien_0['points'])
+```
+
+```
+green
+5
+```
+
+## 使用字典
+字典是一系列的键值对，每个键与一个值相关联
+### 访问字典中的值
+想上面那样
+```python
+new_points = alien_0['points']
+```
+### 添加键值对
+```python
+alien_0['x_pos'] = 0
+alien_0['y_pos'] = 25
+print(alien_0)
+```
+
+```
+{'color': 'green', 'points': 5, 'x_pos': 0, 'y_pos': 25}
+```
+
+### 从创建一个空字典开始
+存储大量数据或编写自动生成键值对的代码通常需要定义一个空字典
+### 修改字典中的值
+```python
+alien_0 = {'x_pos': 0,'y_pos': 25,'speed': 'medium'}
+print(f"Original pos: {alien_0['x_pos']}")
+
+if alien_0['speed'] == 'slow':
+    x_increment = 1
+elif alien_0['speed'] == 'medium':
+    x_increment = 2
+else:
+    # 移动速度非常快
+    x_increment = 3
+
+alien_0['x_pos'] = alien_0['x_pos'] + x_increment
+print(f"Now pos: {alien_0['x_pos']}")
+```
+
+```
+Original pos: 0
+Now pos: 2
+```
+### 删除键值对
+使用`del`删除
+```python
+del alien_0['color']
+print(alien_0)
+```
+
+```
+{'color': 'green', 'points': 5, 'x_pos': 0, 'y_pos': 25}
+{'points': 5, 'x_pos': 0, 'y_pos': 25}
+```
+
+### 由类似的对象组成的字典
+```python
+favorite_language = {
+    'jen': 'Python',
+    'sarah': 'C',
+    'edward': 'Java',
+    'phil': 'Rust'
+}
+
+print(f"Sarah's favorite language is {favorite_language['sarah']}")
+```
+
+```
+Sarah's favorite language is C
+```
+
+### 使用`get()`来访问值
+使用方括号有时会产生问题，如果指定的key不存在，就会出错
+```python
+point_val = alien_0.get('points','No point val assigned.')
+print(point_val)
+```
+
+`get(查询的key，指定的key不存在时返回的值)`
+> 如果没有指定第二个参数，默认返回`None`
+
+## 遍历字典
+### 遍历所有键值对`items()`方法
+```python
+user_0 = {
+    'username': 'efe',
+    'first': 'enrico',
+    'last': 'fermi'
+}
+
+for key,val in user_0.items():
+    print(f"\nKey: {key}")
+    print(f"\nVal: {val}")
+```
+
+```
+Key: username
+
+Val: efe
+
+Key: first
+
+Val: enrico
+
+Key: last
+
+Val: fermi
+```
+### 遍历所有键`keys()`方法
+```python
+for name in favorite_language.keys():
+    print(name.title())
+```
+
+```
+Jen
+Sarah
+Edward
+Phil
+```
+
+### 按特定顺序遍历字典中的所有键
+```python
+for name in sorted(favorite_language.keys()):
+    print(name.title())
+```
+
+```
+Edward
+Jen
+Phil
+Sarah
+```
+
+### 遍历字典中所有值`values()`方法
+```python
+for language in favorite_language.values():
+    print(language)
+```
+
+```
+Python
+C
+Java
+Rust
+```
+> **这种方法应对数据量较小时没有问题，但是有大量重复元素时，需剔除重复项**
+
+可以使用`set()`集合来处理
+```python
+favorite_language = {
+    'jen': 'Python',
+    'sarah': 'C',
+    'edward': 'Java',
+    'phil': 'Python'
+}
+for language in set(favorite_language.values()):
+    print(language)
+```
+
+```
+Java
+Python
+C
+```
+> **集合是无序的，每次顺序可能不一样，但是元素一定唯一。可以直接用`{}`定义一个集合**
+
+```python
+languages = {'python','java','rust'}
+```
+
+## 嵌套
+### 字典列表
+```python
+# 创建一个用于存储外星人的空列表
+aliens = []
+for alien_num in range(30):
+    new_alien = {'color': 'green','points': 5}
+    aliens.append(new_alien)
+
+for alien in aliens[:5]:
+    print(alien)
+print("...")
+print(f"Total num of aliens: {len(aliens)}")
+```
+
+```
+{'color': 'green', 'points': 5}
+{'color': 'green', 'points': 5}
+{'color': 'green', 'points': 5}
+{'color': 'green', 'points': 5}
+{'color': 'green', 'points': 5}
+...
+Total num of aliens: 30
+```
+
+### 在字典中存储列表
+```python
+pizza = {
+    'crust': 'thick',
+    'toppings': ['mushrooms','extra cheese'],
+}
+
+print(f"You ordered a {pizza['crust']}-crust pizza"
+      "with the following toppings:")
+for topping in pizza['toppings']:
+    print(f"\t{topping}")
+```
+
+```
+You ordered a thick-crust pizzawith the following toppings:
+        mushrooms
+        extra cheese
+```
+
+```python
+favorite_languages = {
+    'jen': ['Python','Rust'],
+    'sarah': ['C'],
+    'edward': ['Java','Go'],
+    'phil': ['Python','haskell'],
+}
+
+for name,languages in favorite_languages.items():
+    print(f"\n{name.title()}'s favorite languages are:")
+    for language in languages:
+        print(f"\t{language}")
+```
+
+```
+Jen's favorite languages are:
+        Python
+        Rust
+
+Sarah's favorite languages are:
+        C
+
+Edward's favorite languages are:
+        Java
+        Go
+
+Phil's favorite languages are:
+        Python
+        haskell
+```
+
+### 在字典中存储字典
+```python
+users = {
+    'aeinstein': {
+        'first': 'albert',
+        'last': 'einstein',
+        'location': 'princeton',
+    },
+    'mcurie': {
+        'first': 'marie',
+        'last': 'curie',
+        'location': 'paris',
+    },
+}
+
+for username,user_info in users.items():
+    print(f"\nUsername: {username}")
+    full_name = f"{user_info['first']} {user_info['last']}"
+    location = user_info['location']
+    
+    print(f"\tFull name: {full_name.title()}")
+    print(f"\tLocation: {location.title()}")
+```
+
+```
+Username: aeinstein
+        Full name: Albert Einstein
+        Location: Princeton
+
+Username: mcurie
+        Full name: Marie Curie
+        Location: Paris
+```
+
+# 用户输入和`while`循环
+## `input()`函数的工作原理
+
+```python
+message = input("Tell me someing, and I will repeat it back to you:")
+print(message)
+```
+
+```
+Tell me someing, and I will repeat it back to you:hello
+hello
+```
+> **`input()`函数接受一个参数，是向用户显示的提示，用户的输入会赋给变量**
+
+### 编写清晰的提示
+有时提示会超过一行，可以先将prompt赋给变量，再用变量传参
+```python
+prompt = "If you share your name, we can personalize the message you see"
+prompt += "\nWhat is your first name?"
+
+name = input(prompt)
+print(f"\nHello {name}")
+```
+
+```
+If you share your name, we can personalize the message you see
+What is your first name?Jack
+
+Hello Jack
+```
+
+### 使用`int()`来获取数值输入
+使用`input()`函数获取数值时，解释器会将其解释为字符(串)。
+
+```python
+height = input("How tall are you, in inches?")
+height = int(height)
+if height >= 48:
+    print("\nYou are tall enough to ride!")
+else:
+    print("\nYou'll be able to ride when you're a little older.")
+```
+
+```
+How tall are you, in inches?71
+
+You are tall enough to ride!
+```
+
+### 求模运算符
+
+这与其他语言中的`%`并无不同
+```
+>>> 4 % 3
+1
+>>> 5 % 3
+2
+>>> 6 % 3
+0
+```
+
+## `while`循环简介
+### 使用`while`循环
+```python
+curr_num = 1
+while curr_num <= 5:
+    print(curr_num)
+    curr_num += 1
+```
+
+```
+1
+2
+3
+4
+5
+```
+
+### 使用标志来退出程序
+```python
+prompt = "\nTell me someing, and I will repeat it back to you:"
+prompt += "\nEnter 'quit' to end the program."
+active = True
+while active:
+    message = input(prompt)
+    if message == 'quit':
+        active = False
+    else:
+        print(message)
+```
+
+```
+Tell me someing, and I will repeat it back to you: 
+Enter 'quit' to end the program.Jack
+Jack
+
+Tell me someing, and I will repeat it back to you: 
+Enter 'quit' to end the program.Hell
+Hell
+
+Tell me someing, and I will repeat it back to you: 
+Enter 'quit' to end the program.quit
+```
+
+### 循环控制语句
+像其他语言一样，也有`break`和`continue`两种控制语句
+
+## 使用`while`循环处理列表和字典
+### 在列表之间移动元素
+
+```python
+unconfirmed_users = ['alice','brian','candace']
+confirmed_users = []
+
+while unconfirmed_users:
+    curr_user = unconfirmed_users.pop()
+    print(f"Verifying user: {curr_user.title()}")
+    confirmed_users.append(curr_user)
+print("\nThe following users have been confirmed:")
+for confirmed_user in confirmed_users:
+    print(confirmed_user.title())
+```
+
+```
+Verifying user: Candace
+Verifying user: Brian
+Verifying user: Alice
+
+The following users have been confirmed:
+Candace
+Brian
+Alice
+```
+
+### 删除列表中特定值的所有元素
+
+```python
+pets = ['dog','cat','dog','goldfish','cat','rabbit','cat']
+while 'cat' in pets:
+    pets.remove('cat')
+print(pets)
+```
+
+```
+['dog', 'dog', 'goldfish', 'rabbit']
+```
+
+### 使用用户输入填充字典
+
+```python
+responses = {}
+polling_active = True
+
+while polling_active:
+    name = input("\nWhat is your name?")
+    response = input("Which mountain would you like to climb someday?")
+    responses[name] = response
+    repeat = input("Would you like to let another person respond? (yes/no)")
+    if repeat == 'no':
+        polling_active = False
+print("\n--- Poll Result ---")
+for name,response in responses.items():
+    print(f"{name} would like to climb {response}")
+```
+
+```
+What is your name?Jack
+Which mountain would you like to climb someday?Que
+Would you like to let another person respond? (yes/no)yes
+
+What is your name?Ly
+Which mountain would you like to climb someday?Mu
+Would you like to let another person respond? (yes/no)no
+
+--- Poll Result ---
+Jack would like to climb Que
+Ly would like to climb Mu
+```
+
