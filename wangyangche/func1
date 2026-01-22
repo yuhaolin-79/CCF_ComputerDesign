@@ -1,0 +1,9 @@
+def func1(name,age):
+    print('name:',name)
+    print('age:',age)
+func1('zhangsan',18)
+def func2(name,age=18):  #默认参数是18，可以不输入
+    print('name:',name)
+    print('age:',age)
+func2('zhangsan')
+func2('lisi',20)  #输入第二参数
