@@ -1,0 +1,44 @@
+from functools import reduce
+def func3(a,*tup):  #一个*传入元组
+    print(a)
+    for x in tup:
+        print(x)
+    print(tup)
+list1=[1,2,3]
+tup=tuple(list1)
+func3(tup[0],tup)
+func3(1,1,2,3,4,5)
+func3(tup[0],*tup)  #*相当于把元组拆开再传入
+def func4(a,b,*,c):   #*后面的参数必须以关键字传入
+    print(a+b+c)
+func4(1,2,c=3)
+def func5(d,**tinydict):   #两个*解字典
+    print(d)
+    for k,v in tinydict.items():
+        print(k,v)
+    print(tinydict)
+tup2=('a','b','c')
+tinydict=dict.fromkeys(tup2)
+for x in range(3):
+    tinydict[tup2[x]]=list[x]
+func5(tup[0],**tinydict)
+plus1=lambda w:w+10
+print(plus1(5))
+sum1=lambda v1,v2:v1+v2
+print(sum1(10,20))
+def func6(n):
+    return lambda x:x*n  #返回一个函数
+doubler1=func6(2)  #doubler是一个乘2函数
+tripler1=func6(3)   #tripler是一个乘3函数
+print(doubler1(10))
+print(tripler1(10))
+def f1(a,b,/,c,d,*,e,f):  #形参a和b必须使用指定位置参数,c或d可以是位置形参或关键字形参,而e和f要求为关键字形参
+    print(a+b+c+d+e+f)  #f1(10,20,30/c=30,40/d=40,e=50,f=60)
+#lambda经常与map,filter,reduce函数结合着使用，如下：
+numbers=[1,2,3,4,5,6]
+squares=list(map(lambda x:x**2,numbers))
+print(squares)
+even_numbers=list(filter(lambda x:x%2==0,numbers))
+print(even_numbers)
+total1=reduce(lambda x,y:x+y,numbers)  #使用reduce函数要提前导包
+print(total1)
