@@ -1415,3 +1415,270 @@ Jack would like to climb Que
 Ly would like to climb Mu
 ```
 
+# 第八章 函数
+## 8.1 定义函数
+```python
+def greet_user():
+    """显示简单的问候语"""
+    print("Hello!")
+    
+greet_user()
+```
+> **第二行文本是被称为文档字符串的注释，这些字符串通常用`""" """`引起，能够包含多行**
+
+### 向函数传递信息
+```python
+def greet_user(username):
+    """显示简单的问候语"""
+    print(f"Hello, {username.title()}!")
+    
+greet_user('jesse')
+```
+
+```
+Hello, Jesse!
+```
+
+稍作修改即可传递参数，与其他语言并无区别，`username`是一个形参，`'jesse'`是一个实参
+
+## 8.2 传递实参
+### 8.2.1 位置实参
+基于实参的顺序进行关联
+```python
+def describe_pet(animal_type, pet_name):
+    """显示宠物信息"""
+    print(f"\nI have a {animal_type}")
+    print(f"My {animal_type}'s name is {pet_name.title()}.")
+    
+describe_pet('hamster','harry')
+```
+
+```
+I have a hamster
+My hamster's name is Harry.
+```
+
+> **可以多次调用函数，实际上函数就是因为会多次调用，写成函数更方便点，注意实参的顺序**
+
+### 8.2.2 关键字实参
+是传递给函数名值对(name-value pair)
+```python
+describe_pet(pet_name = 'harry', animal_type = 'hamster')
+```
+顺序不重要
+
+### 8.2.3 默认值
+```python
+def describe_pet(pet_name, animal_type = 'dog'):
+    """显示宠物信息"""
+    print(f"\nI have a {animal_type}")
+    print(f"My {animal_type}'s name is {pet_name.title()}.")
+describe_pet('whllie')
+```
+> **注意：使用默认值时，必须在形参列表先列出没有默认值的形参，再列出有默认值的形参**
+
+实际上，这三种是混合使用的，只要合法等效均可
+
+## 8.3 返回值
+通过`return`语句返回值
+有时可以实现实参为空的情况
+```python
+def get_formatted_name(first_name, last_name, middle_name = ''):
+    """返回标准格式的姓名"""
+    if middle_name:
+        full_name = f"{first_name} {middle_name} {last_name}"
+    else:
+        full_name = f"{first_name} {last_name}"
+    return full_name.title()
+cook = get_formatted_name('jimi', 'hendrix')
+print(cook)
+cook = get_formatted_name('jimi', 'hendrix', 'lee')
+print(cook)
+```
+
+```
+Jimi Hendrix
+Jimi Lee Hendrix
+```
+实际上可以返回任何值，数据结构，比如字典，列表
+```python
+def build_person(first_name, last_name, age = None):
+    """返回一个字典，其中包含一个的信息"""
+    person = {'first': first_name, 'last': last_name}
+    if age:
+        person['age'] = age;
+    return person
+
+cook = build_person('jimi', 'hendrix', 27)
+print(cook)
+```
+
+```
+{'first': 'jimi', 'last': 'hendrix', 'age': 27}
+```
+
+### 结合使用`while`
+```python
+def get_formatted_name(first_name, last_name, middle_name = ''):
+    """返回标准格式的姓名"""
+    if middle_name:
+        full_name = f"{first_name} {middle_name} {last_name}"
+    else:
+        full_name = f"{first_name} {last_name}"
+    return full_name.title()
+
+while True:
+    print("\nPlease tell me your name:")
+    print("(enter 'q' at any time to quit)")
+    f_name = input("First name:")
+    if f_name == 'q':
+        break
+    l_name = input("Last name:")
+    if l_name == 'q':
+        break
+    formatted_name = get_formatted_name(f_name,l_name)
+    print(f"\nHello {formatted_name}!")
+```
+
+```
+Please tell me your name:
+(enter 'q' at any time to quit)
+First name:jimi
+Last name:hed
+
+Hello Jimi Hed!
+
+Please tell me your name:
+(enter 'q' at any time to quit)
+First name:q
+```
+
+## 8.4 传递列表
+我们可以实现在函数中修改列表
+```python
+def print_models(unprinted_designs, completed_models):
+    """
+    模拟打印每个设计，
+    打印每个设计后，将其移动到列表completed_models
+    """
+    while unprinted_designs:
+        curr_design = unprinted_designs.pop()
+        print(f"Printing model: {curr_design}")
+        completed_models.append(curr_design)
+        
+def show_completed_models(completed_models):
+    """显示打印好的模型"""
+    print("\nThe following models have been printed:")
+    for completed_model in completed_models:
+        print(completed_model)
+        
+unprinted_designs = ['phone', 'robot', 'dog']
+completed_models = []
+
+print_models(unprinted_designs, completed_models)
+show_completed_models(completed_models)
+```
+
+```
+Printing model: dog
+Printing model: robot
+Printing model: phone
+
+The following models have been printed:
+dog
+robot
+phone
+```
+
+可以通过向函数传递列表副本来防止函数修改列表
+```python
+function_name(list_name[:])
+```
+
+## 传递任意数量的实参
+```python
+def make_pizza(*toppings):
+    """概述要制作的披萨"""
+    print("\nMaking a pizza with the following toppings:")
+    for topping in toppings:
+        print(f"- {topping}")
+        
+make_pizza('mushroom')
+make_pizza('pep','mushroom','cheese')
+```
+
+```
+Making a pizza with the following toppings:
+- mushroom
+
+Making a pizza with the following toppings:
+- pep
+- mushroom
+- cheese
+```
+> **`*`是让py创建一个名为`toppings`的元组，如果直接打印，会以元组形式出现**
+
+### 使用任意数量的关键字实参
+```python
+def build_profile(first, last, **user_info):
+    """创建一个字典，其中包含我们知道的有关用户的一切"""
+    user_info['first_name'] = first
+    user_info['last_name'] = last
+    return user_info
+user_profile = build_profile('albert','einstein',
+                             location = 'princeton',
+                             field = 'physics')
+print(user_profile)
+```
+
+```
+{'location': 'princeton', 'field': 'physics', 'first_name': 'albert', 'last_name': 'einstein'}
+```
+> **`**`是让py创建一个名为`user_info`的字典，传参是传入键值对
+
+## 8.6 将函数存储在模块中
+### 导入整个模块
+模块是扩展名为`.py`的文件
+```python
+import pizza03
+
+pizza03.make_pizza('mushroom')
+```
+
+```
+Making a pizza with the following toppings:
+- mushroom
+```
+
+### 导入特定的函数
+```python
+from module_name import function_0,function_1
+```
+
+### 使用`as`给模块指定别名
+```python
+import pizza03 as p 
+
+p.make_pizza('mushroom')
+```
+
+也可以给函数指定别名
+```python
+from module_name import function_name as fn
+```
+
+### 导入模块中的所有函数
+
+```python
+from pizza import *
+```
+> ***注意：这是让Python将模块中的所有函数都复制到这个程序文件中，这样无须使用点号来调用程序，但是不建议这样做，在编写大型程序师可能会产生一些问题***
+
+### 编写指南
+- 在给形参指定默认值时，等号两边不要有空格
+- 函数调用中的关键字实参也应该循序这种约定
+
+# 第九章 类
+***OOP是最有效的软件编写方法之一***
+
+## 9.1 创建和使用类
