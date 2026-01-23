@@ -1,0 +1,165 @@
+'''
+def my_decorator(my_func):
+    def my_readdy():
+        print('defore the func1')
+        my_func()
+        print('after the func1')
+    return my_readdy
+@my_decorator
+def my_func():
+    print('func1')
+my_func()
+'''
+'''
+def my_decorator(my_func):
+    def my_readdy(*tup):
+        for x in tup:
+            print(x)
+        my_func(*tup)
+        len1=len(tup)
+        for i in range(len1-1,-1,-1):
+            print(tup[i])
+    return my_readdy
+@my_decorator
+def my_func(*tup):
+    print(tup)
+list1=[1,2,3,4,5]
+tup=tuple(list1)
+my_func(*tup)
+'''
+'''
+def repeat(number):
+    def my_decorator(my_func):
+        def my_readdy(*tup):
+            print('defore the func1')
+            for _ in range(number):
+                my_func(*tup)
+            print('after the func1')
+        return my_readdy
+    return my_decorator
+@repeat(3)
+def my_func(*tup):
+    print(tup)
+tup1=(1,2,3,4,5)
+my_func(*tup1)
+'''
+'''
+def log_class(cls):
+    """类装饰器，在调用方法前后打印日志"""
+    class Wrapper:
+        def __init__(self, *args, **kwargs):  #这里括号中带有*的是将Myclass中所有参数捕获并传入Wrapper
+            self.wrapped = cls(*args, **kwargs)  # 实例化原始类
+        def __getattr__(self, name):      #没有定义Wrapper类中的display函数时函数去查找调用Myclass类中的
+            """拦截未定义的属性访问，转发给原始类"""#定义了就不再进行此函数，用来兜底
+            return getattr(self.wrapped, name)#这里的name是可能不存在的要调用的函数名称，如display
+        
+        def display(self):
+            print(f"调用 {cls.__name__}.display() 前")
+            self.wrapped.display()
+            print(f"调用 {cls.__name__}.display() 后")
+        
+    return Wrapper  # 返回包装后的类
+@log_class
+class MyClass:
+    def display(self):
+        print("这是 MyClass 的 display 方法")
+obj = MyClass()
+obj.display()
+'''
+'''
+def class_decorator(my_cls):
+    class alter:
+        def __init__(self,*args,**kwargs):  #两个下划线自动调用，否则手动调用
+            self.altered=my_cls(*args,**kwargs)
+        def __getattr__(self,name):
+            return getattr(self.altered,name)
+        def wan_(self):
+            print('wan_重写前的操作')
+            self.altered.wan_()
+            print('wan_重写后的操作')
+    return alter
+@class_decorator
+class Myclass:
+    def wan_(self):
+        print('wan_的正常作用')
+    def display(self):
+        print('display函数')
+cls=Myclass()
+cls.wan_()
+cls.display()
+'''
+#f=open('D:/play.txt','r',encoding='UTF-8')
+#print(type(f))
+#print(f.read(10))  #读取10个字节
+#print(f.read())  #读取所有字节
+#print(f.readline())  #读取文件一行
+#print(f.readlines())  #列表形式读取文件
+#for x in f:
+#   print(x)  #每一行末尾有一个换行符，print自带一个换行符
+#f.close()
+'''
+f=open('D:/text1.txt','w',encoding='utf-8')
+f.write('first sentnce')  #write是覆盖原文件，没有文件就创建
+f.flush()
+f.close()  #close 自带flush功能
+f2=open('D:/text1.txt','a',encoding='utf-8')  #追加
+f2.write('\nsecond sentence')
+f2.close()
+f1=open('D:/play.txt','w',encoding='utf-8')
+f1.write('change')
+f1.flush()
+f1.close()
+'''
+'''
+try:       #可能会出现错误
+    f=open('D:/abcd.txt','r',encoding='utf-8')
+except:     #进行下列语句
+    print("not found")
+'''
+#try:
+#    print(name)
+#except NameError as e:
+#    print('未命名')
+#    print(e)
+#except Exception as q:  #所有异常
+#    print("有异常")
+#    print(q)
+#else:
+#    print('无异常')
+#finally:
+#    print("此处都要执行")
+#from 模块 import sth/* as sth  #导入模块
+#from model1 import func1
+#from model2 import func1
+#第二个覆盖第一个
+#导入模块时会运行其中的程序，要在前面加上：
+#if __name__=='__main__':
+#用*导入自定义模块所有函数时，模块中如果是以下形式，则只能导入test_a,而不能导入test_b
+#__all__=['test_a']
+#def test_a():
+#def test_b():
+#import my_package.my_model1
+#import my_package.my_model2
+#my_package.my_model1.info_print()
+#my_package.my_model2.info_print2()
+#from my_package import my_model1
+#my_model1.info_print()
+'''
+class Student:
+    name=None
+    age=None
+    def __init__(self,name,age):
+        self.name=name
+        self.age=age
+    def __str__(self):
+        print(f'{self.name} {self.age}')
+    def __lt__(self,other):
+        return self.age<other.age
+    def __le__(self,other):
+        return self.age<=other.age
+    def __eq__(self,other):
+        return self.age==other.age
+cls1=Student('zhangsan',18)
+cls2=Student('lisi',20)
+print(cls1<cls2)
+'''
