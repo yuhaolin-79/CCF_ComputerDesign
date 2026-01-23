@@ -1682,3 +1682,567 @@ from pizza import *
 ***OOP是最有效的软件编写方法之一***
 
 ## 9.1 创建和使用类
+```python
+class Dog:
+    """一次模拟小狗的简单尝试"""
+    def __init__(self, name, age):
+        """初始化属性 name 和 age"""
+        self.name = name
+        self.age = age
+    
+    def sit(self):
+        """模拟小狗收到命令时坐下"""
+        print(f"{self.name} is now sitting.")
+        
+    def roll_over(self):
+        """模拟小狗收到命令时打滚"""
+        print(f"{self.name} rolled over!")
+```
+
+根据约定，在Python中首字母大写的名称指的是类（此处是全新的类，定义时不加括号）
+### `__init__()`方法
+类中的函数称为方法
+- `self`必不可少，Python会自动传入这个实参
+- 以`self`为前缀的变量可以供类中的所有方法使用，可以通过类的所有实例访问（这种叫做属性(attribute))
+
+### 根据类创建实例
+```python
+class Dog:
+	--snip--
+my_dog = Dog('Willie', 6)
+
+print(f"My dog's name is {my_dog.name}.")
+print(f"My dog is {my_dog.age} years old.")
+```
+
+#### 1.访问属性
+访问实例的属性可使用`.`
+#### 2.调用方法
+```python
+class Dog:
+	--snip--
+my_dog = Dog('Willie', 6)
+my_dog.sit()
+my_dog.roll_over()
+```
+
+#### 3.创建多个实例
+可以根据需求创建多个实例
+
+## 9.2 使用类和实例
+### Car类
+```python
+class Car:
+    """一次模拟汽车的尝试"""
+    def __init__(self, make, model, year):
+        """初始化汽车属性"""
+        self.make = make
+        self.model = model
+        self.year = year
+    def get_descriptive_name(self):
+        """返回规范化的描述性信息"""
+        long_name = f"{self.year} {self.make} {self.model}"
+        return long_name.title()
+
+my_new_car = Car('audi', 'a4', 2024)
+print(my_new_car.get_descriptive_name())
+```
+### 给属性指定默认值
+有些属性可以直接在`__init__()`中指定默认值
+```python
+class Car:
+    """一次模拟汽车的尝试"""
+    def __init__(self, make, model, year):
+        """初始化汽车属性"""
+        self.make = make
+        self.model = model
+        self.year = year
+        self.odometer_reading = 0
+    def get_descriptive_name(self):
+        """返回规范化的描述性信息"""
+        long_name = f"{self.year} {self.make} {self.model}"
+        return long_name.title()
+    def read_odometer(self):
+        """打印一条指出汽车行驶里程的消息"""
+        print(f"This car has {self.odometer_reading} miles on it")
+        
+my_new_car = Car('audi', 'a4', 2024)
+print(my_new_car.get_descriptive_name())
+my_new_car.read_odometer()
+```
+
+```
+2024 Audi A4
+This car has 0 miles on it
+```
+
+### 修改属性的值
+#### 1.直接修改
+通过实例访问它修改
+```python
+class Car:
+	--snip--
+my_new_car = Car('audi', 'a4', 2024)
+print(my_new_car.get_descriptive_name())
+
+my_new_car.odometer_reading = 23
+my_new_car.read_odometer()
+```
+
+#### 2.通过方法修改属性的值
+```python
+class Car:
+	--snip--
+	def update_odometer(self,mileage):
+        """将里程表读数更新为指定的值"""
+        self.odometer_reading = mileage
+        
+my_new_car = Car('audi', 'a4', 2024)
+print(my_new_car.get_descriptive_name())
+
+my_new_car.update_odometer(23)
+my_new_car.read_odometer()
+```
+
+#### 3.通过方法让属性的值递增
+实际上，很多情况下，是让属性的值增加一个特定的值，而不是更新为一个新的值
+```python
+class Car
+	--snip--
+	def increment_odometer(self,miles):
+        """让里程表增加特定的值"""
+        self.odometer_reading += miles
+```
+
+## 9.3 继承
+编写类时，并非总是从头开始，如果要编写的类是一个既有类的特殊版本，可使用继承，原有类称为父类，新类称为子类。
+```python
+class Car:
+    """一次模拟汽车的尝试"""
+    def __init__(self, make, model, year):
+        """初始化汽车属性"""
+        self.make = make
+        self.model = model
+        self.year = year
+        self.odometer_reading = 0
+    def get_descriptive_name(self):
+        """返回规范化的描述性信息"""
+        long_name = f"{self.year} {self.make} {self.model}"
+        return long_name.title()
+    def read_odometer(self):
+        """打印一条指出汽车行驶里程的消息"""
+        print(f"This car has {self.odometer_reading} miles on it")
+    def update_odometer(self,mileage):
+        """将里程表读数更新为指定的值"""
+        if mileage >= self.odometer_reading:
+            self.odometer_reading = mileage
+        else:
+            print("You can't roll back an odometer!")
+    def increment_odometer(self,miles):
+        """让里程表增加特定的值"""
+        self.odometer_reading += miles
+
+class ElectricCar(Car):
+    """电动汽车的独特之处"""
+    def __init__(self, make, model, year):
+        """初始化父类的属性"""
+        super().__init__(make, model, year)
+
+my_model_y = ElectricCar('Tesla', 'model_y', 2024)
+print(my_model_y.get_descriptive_name())
+```
+
+- `super()`是一个特殊的函数，让我们可以调用父类的方法
+- 父类也称为超类(superclass)，`super()`因此得名
+
+### 给子类定义属性和方法
+```python
+class Car
+	--snip--
+class ElectricCar(Car):
+    """电动汽车的独特之处"""
+    def __init__(self, make, model, year):
+        """
+        先初始化父类的属性，
+        再初始化特有属性
+        """
+        super().__init__(make, model, year)
+        self.battery_size = 40
+    def describe_battery(self):
+        """打印一条电池容量信息"""
+        print(f"This car has a {self.battery_size}-kWh battery.")
+
+my_model_y = ElectricCar('Tesla', 'model_y', 2024)
+print(my_model_y.get_descriptive_name())
+my_model_y.describe_battery()
+```
+
+```
+2024 Tesla Model_Y
+This car has a 40-kWh battery.
+```
+
+### 重写父类中的方法
+```python
+class ElectricCar(Car):
+	-- snip --
+	def fill_gas_tank(self):
+        """电动汽车没油油箱"""
+        print("This car doesn't have a gas tank.")
+```
+
+假设`Car`类中有`fill_gas_tank()`这个方法，现在Python将忽略父类中的这个方法，转而运行上述代码
+
+### 将实例用作属性
+将大型类拆分成多个协同工作的小类，这种方法称为组合
+```python
+class Car
+	--snip--
+class Battery:
+    """一次模拟电动汽车电池的简单尝试"""
+    def __init__(self, battery_size=40):
+        """初始化电池属性"""
+        self.battery_size = battery_size
+    def describe_battery(self):
+        """打印一条电池容量信息"""
+        print(f"This car has a {self.battery_size}-kWh battery.")
+
+class ElectricCar(Car):
+    """电动汽车的独特之处"""
+    def __init__(self, make, model, year):
+        """
+        先初始化父类的属性，
+        再初始化特有属性
+        """
+        super().__init__(make, model, year)
+        self.battery = Battery()
+    def fill_gas_tank(self):
+        """电动汽车没油油箱"""
+        print("This car doesn't have a gas tank.")
+
+
+my_model_y = ElectricCar('Tesla', 'model_y', 2024)
+print(my_model_y.get_descriptive_name())
+my_model_y.battery.describe_battery()
+```
+
+## 9.4 导入类
+### 导入单个类，在一个模块中存储多个类
+```python
+from car import Car, ElectricCar
+
+my_mustang = Car('ford', 'mustang', 2024)
+print(my_mustang.get_descriptive_name())
+my_leaf = ElectricCar('nissan', 'leaf', 2024)
+print(my_leaf.get_descriptive_name())
+```
+
+```
+2024 Ford Mustang
+2024 Nissan Leaf
+```
+
+### 导入整个模块
+- 这与函数相同，导入整个模块后，需要使用`.`
+- 当然，也可以在一个模块中导入另一个模块
+
+### 导入模块的所有类
+```python
+from module_name import *
+```
+> **依然不推荐这种方法**
+
+### 使用别名
+可以给模块中的类，或者模块指定别名
+## 9.5 Python 标准库
+下面示范一个
+```
+>>> from random import randint
+>>> randint(1, 6)
+1
+```
+
+```
+>>> from random import choice
+>>> players = ['cah', 'jie', 'loo']
+>>> first_up = choice(players)
+>>> first_up
+'cah'
+```
+
+> ***在创建与安全有关的项目时，不要使用`random`模块，此外，还可以导入很多外部模块***
+
+## 9.6 类的编程风格
+- 类名应采用大驼峰式命名法
+	- `ElectricCar`
+- 每个类，都应在类定义后面紧跟一个文档字符串
+- 先写标准库模块中的`import`语句，再写自己的模块
+
+# 第十章 文件和异常
+
+## 10.1 读取文件
+### 10.1.1 读取文件的全部内容
+```python
+from pathlib import Path
+
+path = Path('pi_digits.txt')
+contents = path.read_text()
+print(contents)
+```
+
+```
+3.1415926535
+   8979323846
+   2643383279
+   
+```
+
+>**理论上，结尾会出现一个空行，`read_text()`在到达文件末尾时会返回一个空字符串，此时可以使用`rstrip()`**
+
+### 10.1.2 文件的相对路径和绝对路径
+- 最简单的做法就是把文件和程序文件放在同一个文件夹中（且不在子文件夹中）
+- 当然最稳妥的做法是使用绝对路径
+
+> **在显示文件路径时，win会使用`\`而不是`/`，但在代码中应该始终使用`/`，`pathlib`库会自动使用正确的路径表示方法**
+
+### 10.1.3 访问文件中的各行
+- 可以使用`splitlines()`方法将冗长的字符串转换成一系列的行，再使用`for`循环每次一行来检查
+```python
+from pathlib import Path
+
+path = Path('pi_digits.txt')
+contents = path.read_text().rstrip()
+
+lines = contents.splitlines()
+for line in lines:
+    print(line)
+```
+- `splitlines()`返回一个列表，包含文件中的所有行
+
+### 10.1.4 使用文件的内容
+```python
+from pathlib import Path
+
+path = Path('pi_digits.txt')
+contents = path.read_text().rstrip()
+
+lines = contents.splitlines()
+pi_string = ''
+for line in lines:
+    pi_string += line
+    
+print(pi_string)
+print(len(pi_string))
+```
+
+```
+3.1415926535   8979323846   2643383279
+38
+```
+
+```python
+for line in lines:
+    pi_string += line.lstrip()
+```
+
+```
+3.141592653589793238462643383279
+32
+```
+> ***注意：读取文件时，所有内容都是字符串，如要以数值形式理解，需使用`int()`，`float()`转换***
+
+### 10.1.5 包含100万位的大型文件
+```python
+from pathlib import Path
+
+path = Path('pi_million_digits.txt')
+contents = path.read_text().rstrip()
+
+lines = contents.splitlines()
+pi_string = ''
+for line in lines:
+    pi_string += line.lstrip()
+    
+print(f"{pi_string[:52]}...")
+print(len(pi_string))
+```
+
+```
+3.14159265358979323846264338327950288419716939937510...
+1000002
+```
+
+```python
+from pathlib import Path
+
+path = Path('pi_million_digits.txt')
+contents = path.read_text().rstrip()
+
+lines = contents.splitlines()
+pi_string = ''
+for line in lines:
+    pi_string += line.lstrip()
+ 
+birthday = input("Enter your birthday, in the form mmddyy: ")
+if birthday in pi_string:
+    print("Your birthday appears in the first million digits of pi!")
+else:
+    print("Your birthday does not appear in the first million digits of pi.")
+```
+
+```
+Enter your birthday, in the form mmddyy: 051407
+Your birthday does not appear in the first million digits of pi.
+```
+
+## 10.2 写入文件
+### 10.2.1 写入一行
+```python
+from pathlib import Path
+
+path = Path('programming.txt')
+path.write_text("Python is fun!")
+```
+
+>**Python只能将字符串写入文本文件，数值数据需先使用`str()`转换
+
+### 10.2.2 写入多行
+```python
+from pathlib import Path
+
+contents = "hello.\n"
+contents += "greetings.\n"
+contents += "superise.\n"
+
+path = Path('programming.txt')
+path.write_text(contents)
+```
+> **使用`write_text()`时，需要谨慎，如果指定文件已经存在，它会先删除其内容，并将指定内容写入其中**
+
+## 10.3 异常
+- Python使用称为异常(exception)的特殊对象来管理程序执行期间的错误
+- 每当发生错误，都会创建一个异常对象
+- 如果编写了处理该异常的代码，程序就会继续运行
+- 如果没有处理，程序将停止，并显示一个`traceback`
+
+### 10.3.1 `ZeroDivisionError`异常（除0错误）
+```python
+>>> print(5/0)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ZeroDivisionError: division by zero
+```
+
+### 10.3.2 使用`try-except`代码块
+```python
+try:
+    print(5/0)
+except ZeroDivisionError:
+    print("You can't divide by zero!")
+```
+
+```
+You can't divide by zero!
+```
+
+### 10.3.3 使用异常避免崩溃和`else`代码块
+```python
+print("Give you two numbers, and I'll divide them.")
+print("Enter 'q' to quit.")
+
+while True:
+    first_num = input("\nFirst number: ")
+    if first_num == 'q':
+        break
+    second_num = input("Second number: ")
+    if second_num == 'q':
+        break
+    try:
+        answer = int(first_num) / int(second_num)
+    except ZeroDivisionError:
+        print("You can't divide by zero!")
+    else:
+        print(answer)
+```
+
+```
+Give you two numbers, and I'll divide them.
+Enter 'q' to quit.
+
+First number: 8
+Second number: 4
+2.0
+
+First number: 9
+Second number: 0
+You can't divide by zero!
+
+First number: q
+```
+> **成功执行`try`代码块的运算后，就会执行`else`代码块中的代码**
+
+### 10.3.4 处理`FileNotFoundError`异常
+```python
+from pathlib import Path
+
+path = Path('alice.txt')
+contents = path.read_text(encoding='utf-8')
+```
+> ***注意：如果系统默认编码与要读取的文件的编码不一致，参数`encoding`必不可少
+
+```python
+Traceback (most recent call last):
+  File "e:\learn\Python_learning\CCF_ComputerDesign\yuhaolin\file_io\alice.py", line 4, in <module>
+    contents = path.read_text(encoding='utf-8')
+  File "C:\Users\36259\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 546, in read_text
+    return PathBase.read_text(self, encoding, errors, newline)     
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^     
+  File "C:\Users\36259\AppData\Local\Programs\Python\Python313\Lib\pathlib\_abc.py", line 632, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\36259\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 537, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'alice.txt'
+```
+> **重点关注最后一行，和第一处`line 4`，要将错误代码行放入`try`中，并编写对应的`except`**
+
+```python
+from pathlib import Path
+
+path = Path('alice.txt')
+try:
+    contents = path.read_text(encoding='utf-8')
+except FileNotFoundError:
+    print("The file 'alice.txt' was not found.")
+```
+
+```
+The file 'alice.txt' was not found.
+```
+
+### 10.3.5 分析文本
+```python
+from pathlib import Path
+
+path = Path('alice.txt')
+try:
+    contents = path.read_text(encoding='utf-8')
+except FileNotFoundError:
+    print("The file 'alice.txt' was not found.")
+else:
+    words = contents.split()
+    num_words = len(words)
+    print(f"The file 'alice.txt' has about {num_words} words.")
+```
+
+```
+The file 'alice.txt' has about 29594 words.
+```
+
+> **使用`split()`方法，以空白为分隔符将字符串分拆为多个部分**
+
+### 10.3.6 静默失败  
+```python
+
+```
