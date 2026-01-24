@@ -1,0 +1,88 @@
+#a=1
+#print(repr(a))  #对数字的效果和str一样
+#for x in range(1,11):
+#    print(repr(x).rjust(2),repr(x*x).rjust(3),end=' ')  #rjust(n)右对齐n个，ljust(n)右对齐n个
+#    print(repr(x**3).rjust(4))
+#for i in range(1,11):
+#    print('{0:2d} {1:3d} {2:4d}'.format(i,i**2,i**3))  #format格式
+#print('{}:{}'.format('hello','world'))
+#print('{0}:{1}'.format('hello','world'))
+#print('{1}:{0}'.format('hello','world'))
+#print('{0}:{0}'.format('hello','world'))
+#a='3.14'
+#print(a.zfill(5))  #左边自动补0,需要跟字符串
+#f=open('D:/play.txt','w',encoding='utf-8')
+#f.seek(x,0) ： 从起始位置即文件首行首字符开始移动 x 个字符
+#f.seek(x,1) ： 表示从当前位置往后移动x个字符
+#f.seek(-x,2)：表示从文件的结尾往前移动x个字符
+#x=f.tell():表示当前指针在文件中所指向的位置
+#f.close()
+#a=int(input())
+#print(a+10)
+'''
+import os
+current_directory=os.getcwd()
+print(current_directory)  #当前python脚本所在的位置
+files_and_dirs = os.listdir()  #os.listdir(path)  不给出path默认是当前工作目录下的内容
+print(files_and_dirs)
+os.rmdir(path)   #函数用于删除一个空目录。如果目录不为空，会抛出 OSError 异常。
+os.mkdir(path) #函数用于创建一个新的目录。如果目录已经存在，会抛出 FileExistsError 异常。
+os.remove(path) #函数用于删除一个文件。如果文件不存在，会抛出 FileNotFoundError 异常。
+os.rename(src, dst) #函数用于重命名文件或目录。src 是原始路径，dst 是新的路径。
+'''
+'''
+def divide(x, y):
+    try:
+        result = x / y
+    except ZeroDivisionError:
+        print("division by zero!")
+    else:
+        print("result is", result)
+    finally:
+        print("executing finally clause")  #都要执行
+divide(2,1)
+divide(2,0)
+divide('2','1')
+'''
+'''
+class people:
+    name = ''
+    age = 0
+    # 定义私有属性,私有属性在类外部无法直接进行访问
+    __weight = 0
+    # 定义构造方法
+    def __init__(self, n, a, w):
+        self.name = n
+        self.age = a
+        self.__weight = w
+    def speak(self):
+        print("%s 说: 我 %d 岁。" % (self.name, self.age))
+# 单继承示例
+class student(people):
+    grade = ''
+    def __init__(self, n, a, w, g):
+        # 调用父类的构函
+        people.__init__(self, n, a, w)
+        self.grade = g
+    # 覆写父类的方法
+    def speak(self):
+        print("%s 说: 我 %d 岁了，我在读 %d 年级" % (self.name, self.age, self.grade))
+# 另一个类，多继承之前的准备
+class speaker():
+    topic = ''
+    name = ''
+    def __init__(self, n, t):
+        self.name = n
+        self.topic = t
+
+    def speak(self):
+        print("我叫 %s，我是一个演说家，我演讲的主题是 %s" % (self.name, self.topic))
+# 多继承
+class sample(student,speaker):
+    a = ''
+    def __init__(self, n, a, w, g, t):
+        student.__init__(self, n, a, w, g)
+        speaker.__init__(self, n, t)
+test = sample("Tim", 25, 80, 4, "Python")
+test.speak()  #调用方法时会从左向右查找sample继承父类中的方法
+'''
