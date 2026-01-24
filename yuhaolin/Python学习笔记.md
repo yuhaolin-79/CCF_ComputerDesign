@@ -2244,5 +2244,355 @@ The file 'alice.txt' has about 29594 words.
 
 ### 10.3.6 静默失败  
 ```python
-
+def count_words(path):
+    """计算一个文件大致的单词数"""
+    try:
+        contents = path.read_text(encoding='utf-8')
+    except FileNotFoundError:
+        pass
+    else:
+        words = contents.split()
+        num_words = len(words)
+        print(f"The file has about {num_words} words.")
 ```
+> **在`except`代码块中写`pass`语句，出现异常时，什么都不会发生，既没有`traceback`也没有提示**
+
+## 10.4 存储数据
+- 使用`json`模块存储数据
+### 10.4.1 使用`json.dumps()`和`json.loads()`
+```python
+from pathlib import Path
+import json
+
+nums = [1,2,3,4,5,6]
+
+path = Path('numbers.json')
+contents = json.dumps(nums)
+path.write_text(contents)
+```
+> **`json.dumps()`接受一个实参，将其转换为`json`格式的数据，返回一个字符串，这样就可以将其写入数据文件了
+
+```python
+from pathlib import Path
+import json
+
+path = Path('numbers.json')
+contents = path.read_text()
+numbers = json.loads(contents)
+print(numbers)
+```
+
+- 这样实现了在程序之间共享数据
+
+### 10.4.2 保存和读取用户生成的数据
+```python
+from pathlib import Path
+import json
+
+path = Path('username.json')
+if path.exists():
+    contents = path.read_text()
+    username = json.loads(contents)
+    print(f"Welcome back, {username}!")
+else:
+    username = input("what is your name?")
+    contents = json.dumps(username)
+    path.write_text(contents)
+    print(f"We'll remember you when you come back, {username}!")
+```
+>**当然，此处也可以使用`try-except`代码块，不过`path.exists()`函数也可以实现**
+
+### 10.4.3 重构
+- 虽然代码能够运行，但还可以将其划分为一系列完成具体工作的函数来进行改进
+```python
+from pathlib import Path
+import json
+
+def get_stored_username(path):
+    """如果存储了用户名，就获取它"""
+    if path.exists():
+        contents = path.read_text()
+        username = json.loads(contents)
+        return username
+    else:
+        return None
+    
+def get_new_username(path):
+    """提示用户输入用户名，并将其存储"""
+    username = input("What is your name? ")
+    contents = json.dumps(username)
+    path.write_text(contents)
+    return username
+
+def greet_user():
+    """问候用户，并指出其名字"""
+    path = Path('username.json')
+    username = get_stored_username(path)
+    if username:
+        print(f"Welcome back, {username}!")
+    else:
+        username = get_new_username(path)
+        print(f"We'll remember you when you come back, {username}!")
+        
+greet_user()
+```
+
+# 第十一章 测试代码
+
+## 11.1 使用`pip`安装`pytest`
+### 11.1.1 更新`pip`
+```
+py -m pip install --upgrade pip
+-- snip --
+Successfully installed pip-25.3
+```
+### 11.1.2 安装`pytest`
+```
+py -m pip install --user pytest
+```
+
+## 11.2 测试函数
+```python
+from name_function import get_formatted_name
+
+print("Enter 'q' at any time to quit.")
+while True:
+    first = input("\nPlease give me a first name: ")
+    if first == 'q':
+        break
+    last = input("Please give me a last name: ")
+    if last == 'q':
+        break
+    formatted_name = get_formatted_name(first, last)
+    print(f"\tNeatly formatted name: {formatted_name}.")
+```
+
+### 11.2.1 单元测试和测试用例
+- 一种最简单的测试时单元测试
+- 全覆盖测试用例包含一整套单元测试
+### 11.2.2 可通过的测试
+```python
+from name_function import get_formatted_name
+
+def test_name_function():
+    """能正确处理像 'janis joplin' 这样的姓名吗？"""
+    formatted_name = get_formatted_name('janis', 'joplin')
+    assert formatted_name == 'Janis Joplin'
+```
+
+- 测试文件名称和测试函数名称都要以`test_`打头
+- 做出一个断言`assert`
+
+### 11.2.3 运行测试
+```python
+pytest
+============== test session starts ===============
+platform win32 -- Python 3.13.5, pytest-9.0.2, pluggy-1.6.0
+rootdir: E:\learn\Python_learning\CCF_ComputerDesign\yuhaolin
+collected 1 item                                  
+
+test_name_function.py .                     [100%]
+
+=============== 1 passed in 0.02s ================
+```
+>**注意：要配下环境变量哦，不配可以`py -m pytest`
+
+### 11.2.4 未通过的测试
+- 我们故意修改原来的函数
+```python
+pytest
+============== test session starts ===============
+platform win32 -- Python 3.13.5, pytest-9.0.2, pluggy-1.6.0
+rootdir: E:\learn\Python_learning\CCF_ComputerDesign\yuhaolin
+collected 1 item                                   
+
+test_name_function.py F                     [100%]
+
+==================== FAILURES ==================== 
+_______________ test_name_function _______________ 
+
+    def test_name_function():
+        """能正确处理像 'janis joplin' 这样的姓名吗？"""
+>       formatted_name = get_formatted_name('janis', 'joplin')
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: get_formatted_name() missing 1 required positional argument: 'last'
+
+test_name_function.py:5: TypeError
+============ short test summary info =============
+FAILED test_name_function.py::test_name_function - TypeError: get_formatted_name() missing 1 requ...  
+=============== 1 failed in 0.06s ================
+```
+
+- 接下来我们修改原函数
+
+```python
+pytest
+============== test session starts ===============
+platform win32 -- Python 3.13.5, pytest-9.0.2, pluggy-1.6.0
+rootdir: E:\learn\Python_learning\CCF_ComputerDesign\yuhaolin
+collected 1 item                                   
+
+test_name_function.py .                     [100%] 
+
+=============== 1 passed in 0.01s ================ 
+```
+
+### 11.2.5 添加新的测试
+```python
+from name_function import get_formatted_name
+
+def test_name_function():
+    """能正确处理像 'janis joplin' 这样的姓名吗？"""
+    formatted_name = get_formatted_name('janis', 'joplin')
+    assert formatted_name == 'Janis Joplin'
+    
+def test_first_last_middle_name():
+    """能正确处理像 'wolfgang amadeus mozart' 这样的姓名吗？"""
+    formatted_name = get_formatted_name('wolfgang', 'mozart', 'amadeus')
+    assert formatted_name == 'Wolfgang Amadeus Mozart'
+```
+
+```python
+pytest
+============== test session starts ===============
+platform win32 -- Python 3.13.5, pytest-9.0.2, pluggy-1.6.0
+rootdir: E:\learn\Python_learning\CCF_ComputerDesign\yuhaolin
+collected 2 items                                  
+
+test_name_function.py ..                    [100%] 
+
+=============== 2 passed in 0.01s ================
+```
+
+## 11.3 测试类
+### 11.3.1 各种断言
+| 断言                           | 用途                     |
+| ---------------------------- | ---------------------- |
+| assert a == b                | 判断a和b值相等               |
+| assert a != b                | 判断a和b值不相等              |
+| assert a > b                 | 判断a大于b                 |
+| assert a >= b                | 判断a大于等于b               |
+| assert a < b                 | 判断a小于b                 |
+| assert a <= b                | 判断a小于等于b               |
+| assert a is b                | 判断a和b是同一个对象（内存地址相同）    |
+| assert a is not b            | 判断a和b不是同一个对象（内存地址不同）   |
+| assert a                     | 判断a为True（非空/非0/非False） |
+| assert not a                 | 判断a为False（空/0/False）   |
+| assert a is None             | 判断a是空值None             |
+| assert a is not None         | 判断a不是空值None            |
+| assert x in a                | 判断x是容器/字符串a的成员/子串      |
+| assert x not in a            | 判断x不是容器/字符串a的成员/子串     |
+| assert all(a)                | 判断容器a中所有元素为True        |
+| assert any(a)                | 判断容器a中至少一个元素为True      |
+| with pytest.raises(Err)      | 判断代码块抛出指定类型的异常Err      |
+| assert a == pytest.approx(b) | 判断浮点数a和b近似相等（解决精度问题）   |
+| assert a == b, 提示语           | 断言失败时显示自定义提示语，快速定位问题   |
+### 11.3.2 一个要测试的类
+```python
+class AnonymousSurvey:
+    """收集匿名调查的问卷的答案"""
+    def __init__(self, question):
+        """存储一个问题，并为存储答案做准备"""
+        self.question = question
+        self.responses = []
+    def show_question(self):
+        """显示调查问卷"""
+        print(self.question)
+    def store_response(self, new_response):
+        """存储单份调查问卷"""
+        self.responses.append(new_response)
+    def show_results(self):
+        """显示收集到的所有答案"""
+        print("Survey results:")
+        for response in self.responses:
+            print(f"- {response}")
+```
+
+
+- 再编写一个使用它的程序
+
+```python
+from survey import AnonymousSurvey
+# 定义一个问题，并创建一个表示调查的AnonymousSurvey对象
+question = "What language did you first learn to speak?"
+my_survey = AnonymousSurvey(question)
+
+# 显示问题并存储答案
+my_survey.show_question()
+print("Enter 'q' at any time to quit.\n")
+while True:
+    response = input("Language: ")
+    if response == 'q':
+        break
+    my_survey.store_response(response)
+    
+# 显示调查结果
+print("\nThank you to everyone who participated in the survey!")
+my_survey.show_results()
+```
+
+### 11.3.3 测试类
+```python
+from survey import AnonymousSurvey
+
+def test_store_single_response():
+    """测试单个答案是否被妥善存储"""
+    question = "What language did you first learn to speak?"
+    language_survey = AnonymousSurvey(question)
+    language_survey.store_response('English')
+    assert 'English' in language_survey.responses
+
+def test_store_three_responses():
+    """测试多个答案是否被妥善存储"""
+    question = "What language did you first learn to speak?"
+    language_survey = AnonymousSurvey(question)
+    responses = ['English', 'Spanish', 'Mandarin']
+    for response in responses:
+        language_survey.store_response(response)
+    for response in responses:
+        assert response in language_survey.responses
+```
+
+```python
+pytest test_survey.py
+============== test session starts ===============
+platform win32 -- Python 3.13.5, pytest-9.0.2, pluggy-1.6.0
+rootdir: E:\learn\Python_learning\CCF_ComputerDesign\yuhaolin
+collected 2 items                                  
+
+test_survey.py ..                           [100%] 
+
+=============== 2 passed in 0.01s ================ 
+```
+
+### 11.3.4 使用夹具
+- 夹具可以帮助我们搭建测试环境
+- 在`pytest`中可以使用装饰器`@pytest.fixture`装饰的函数
+- 装饰器是放在函数的定义前的指令
+
+```python
+import pytest
+from survey import AnonymousSurvey
+
+@pytest.fixture
+def language_survey():
+    """一个可供所有测试函数使用的AnonymousSurvey实例"""
+    question = "What language did you first learn to speak?"
+    language_survey = AnonymousSurvey(question)
+    return language_survey
+    
+def test_store_single_response(language_survey):
+    """测试单个答案是否被妥善存储"""
+    language_survey.store_response('English')
+    assert 'English' in language_survey.responses
+
+def test_store_three_responses(language_survey):
+    """测试多个答案是否被妥善存储"""
+    responses = ['English', 'Spanish', 'Mandarin']
+    for response in responses:
+        language_survey.store_response(response)
+    for response in responses:
+        assert response in language_survey.responses
+```
+
+# 以上是蟒蛇书第一部分核心语法
