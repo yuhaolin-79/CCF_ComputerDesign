@@ -1,0 +1,115 @@
+'''
+class Parent:  # 定义父类
+    def myMethod(self):
+        print('调用父类方法')
+class Child(Parent):  # 定义子类
+    def myMethod(self):
+        print('调用子类方法')
+c = Child()  # 子类实例
+c.myMethod()  # 子类调用重写方法
+super(Child, c).myMethod()  #super调用父类方法
+'''
+'''
+a=10
+def func1():
+    global a   #将a的作用域扩大为全局变量
+    a=a+1
+    print(a)
+func1()
+def func2():
+    b=20
+    def func3():
+        nonlocal b  #将b的作用域扩大到外层函数中，但并不是全局变量
+        b=b+1
+        print(b)
+    func3()
+func2()
+print(b)  #b不是全局变量，不能输出
+'''
+'''
+from typing import List,Dict,Tuple,Set
+numbers:List[int]=[1,2,3,4,5]
+student:Dict[str,int]={'zhangsan':80,'lisi':99}
+tup:Tuple[int,float,str]=(12,0.13,'abcd')
+site1:Set[int]={12,33,57}
+from typing import Optional
+def find_score(name:str) ->Optional[str]:
+    students={'zhangsan':'20','lisi':'10','wangwu':'18'}
+    return students[name]
+print(find_score('lisi'))
+from typing import Union
+def info_print(data:Union[str,int,List[int]]) ->None:
+    print(type(data))
+info_print([1,2,3])
+'''
+#约瑟夫环
+'''
+people=[]
+list1=[]
+for i in range(1,32):
+    people.append(1)
+check=0
+a=1
+j=0
+while a<=31:
+    if a==31:
+        a=1
+    elif j==15:
+        break
+    else:
+        if people[a]==0:
+            a+=1
+            continue
+        else:
+            check+=1
+            if check==9:
+                check=0
+                people[a]=0
+                list1.append(a)
+                j+=1
+            else:
+                a+=1
+                continue
+print(list1)
+'''
+'''
+list1=[]
+list2=[]
+while True:
+    str=input()
+    str=str.split()
+    if str[0]=='end':
+        break
+    list1.append(str[0])
+    list2.append(str[1])
+list3=[]
+for i in range(26):
+    list3.append(1)
+for s in list1:
+    for n in s:
+        list3[ord(n)-ord('a')]=0
+list4=[]
+for i in range(26):
+    if list3[i]==0:
+        list4.append(chr(i+ord('a')))
+count=len(list4)
+count_doubler=count**2
+tinydict={}
+for c in list4:
+    for d in list4:
+        tinydict[f'({c},{d})']=0
+print(tinydict)
+cnt=-1
+for s in list1:
+    cnt+=1
+    for i in range(len(s)-1):
+        for j in range(i+1,len(s)):
+            tinydict[f"({s[i]},{s[j]})"] += ord(list2[cnt])-ord('0')
+for i in range(len(list4)-1):
+    for j in range(i+1,len(list4)):
+        if list4[i]!=list4[j]:
+            tinydict[f"({list4[i]},{list4[j]})"],tinydict[f"({list4[j]},{list4[i]})"]=tinydict[f"({list4[i]},{list4[j]})"]+tinydict[f"({list4[j]},{list4[i]})"],0
+        else:
+            continue
+print(tinydict)
+'''
