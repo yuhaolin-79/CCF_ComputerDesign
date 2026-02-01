@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div>
+        这是一个块
+    </div>
+<span>这是一个行内元素</span>
+<span>这是一个行内元素</span>
+<h1>标题1</h1>
+<h2>标题2</h2>
+<h3>标题3</h3>
+<h4>标题4</h4>
+<h5>标题5</h5>
+<h6>标题6</h6>
+<strong>强壮</strong>
+<a href="https://www.baidu.com">跳转到百度</a>
+<div>图片：</div>
+    <span>绝对路径</span>
+    <img src="https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png" alt="这是一个图片">
+    <span>相对路径</span>
+    <img src="img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png" alt="这是一个图片">
+<div>视频：</div>
+    <span>绝对路径</span>
+    <video src="https://www.baidu.com/1.mp4" controls></video>
+    <span>相对路径</span>
+    <video src="1.mp4" controls></video>
+<div>表单</div>
+    账号<input type="text">
+    密码<input type="password">
+    <textarea name="" id="" cols="30" rows="10"></textarea>
+<button>按钮发送</button>
+<i>这是一个图标</i>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试css网页布局</title>
+</head>
+<body>
+<div style="width: 300px;height: 300px;border: 1px solid red">
+
+</div>
+<div style="width: 100%;height: 200px;border:5px dashed blue">
+
+</div>
+<h4>阴影</h4>
+<div style="background-color: red;width: 300px;height: 300px;border:1px solid green;margin:20px;padding:30px;
+box-shadow: 10px 10px 5px #888888;"></div>
+<div style="background-color: white;width: 300px;height: 300px;border:1px solid green;margin:20px;padding:30px;
+box-shadow: 0 0 10px -2px rgba(0,0,0,0.5);"></div>
+<h4>圆角</h4>
+<div style="background-color: white;width: 300px;height: 300px;border:1px solid green;margin:20px;padding:30px;
+border-radius: 20px;box-shadow: 0 0 10px -2px rgba(0,0,0,0.5);"></div>
+<h2>Flex布局</h2>
+<div style="display: flex;flex-direction: row;flex-wrap: wrap;justify-content: center;align-items: center;">
+    <div style="background-color: red;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">1</div>
+    <div style="background-color: white;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">2</div>
+    <div style="background-color: red;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">3</div>
+    <div style="background-color: white;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">4</div>
+</div>
+<div style="display: flex;flex-direction: row;flex-wrap: wrap;justify-content: space-between;align-items: center;">
+    <div style="background-color: red;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">1</div>
+    <div style="background-color: white;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">2</div>
+    <div style="background-color: red;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">3</div>
+    <div style="background-color: white;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">4</div>
+</div>
+<div style="display: flex;flex-direction: row;flex-wrap: wrap;justify-content: space-around;align-items: center;">
+    <div style="background-color: red;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">1</div>
+    <div style="background-color: white;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">2</div>
+    <div style="background-color: red;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">3</div>
+    <div style="background-color: white;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">4</div>
+</div>
+<div style="display: flex;flex-direction: column;flex-wrap: wrap;justify-content: center;align-items: center;">
+    <div style="background-color: red;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">1</div>
+    <div style="background-color: white;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">2</div>
+    <div style="background-color: red;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">3</div>
+    <div style="background-color: white;width: 100px;height: 100px;border:1px solid green;margin:20px;padding:30px;">4</div>
+</div>
+<h1>Flex布局</h1>
+<div style="display:flex;width:70%;margin:30px auto;">
+    <div style="flex:1;display:flex;align-items:flex-end">
+        <div style="width:100px;font-size:30px;color:#2f973e">豆瓣网</div>
+        <div style="flex=1;padding-left:20px;"><input placeholder="请输入电影、音乐" type="text" style="dorder:1px solid #ccc;padding:10px;outline:none;width:300px;border-radius:10px"></div>
+    </div>
+    <div style="flex=1;display:flex;font-size:20px;justify-content:flex-end">
+        <div style="padding:0 10px;color:red">阅读</div>
+        <div style="padding:0 10px;color:blue">电影</div>
+        <div style="padding:0 10px;color:gray">小说</div>
+        <div style="padding:0 10px;color:yellow">音乐</div>
+    </div>
+
+</div>
+</body>
+</html>
+<template>
+    <div>
+        <el-container>
+
+            <el-aside style="width:200px;min-height:100vh;">
+            侧边栏
+                <div style="height:60px;background-color:#8c939d;color:white;display:flex;align-items:center;justify-content:center">
+                    logo
+                </div>
+
+                <el-menu style="border:none;">
+                    <el-menu-item>
+                        首页
+                    </el-menu-item>
+                    <el-submenu>
+                        <template slot="title">
+                            <i class="el-icon-menu"></i>
+                            <span>信息管理</span>
+                        </template>
+                        <el-menu-item>用户信息</el-menu-item>
+                    </el-submenu>
+                </el-menu>
+            </el-aside>
+
+            <el-container>
+                <el-header>
+                头部
+                </el-header>
+
+                <el-main>
+                主体
+                </el-main>
+
+            </el-container>
+        </el-container>
+    </div>
+</template>
+
+<script>
+export default {
+    name: "web_test",
+}
+</script>
