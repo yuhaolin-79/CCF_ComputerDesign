@@ -1,0 +1,204 @@
+<template>
+    <div>
+        <el-container>
+            <el-aside :width="asideWidth" style="min-height:100vh;background-color: #001529;">
+                侧边栏
+                <div style="display:flex;align-items:center;justify-content:center;height:60px;line-height:60px;color:white;">
+                    <img src="@/assets/Screenshot_20260202_203929.jpg" alt="" style="width:80px;height:80px">
+                    <span style="font-size:40px;color:red;margin-left:10px" v-show="!isCollapse">泥川</span>
+                </div>
+                <el-menu :collapse="isCollapse" :collapse-transition="false" router unique-opened="true" background-color="#001529" text-color="rgba(255,255,255,0.65)" active-text-color="#fff" style="border:none" default-active="$route.path">
+                    <el-menu-item index="/">
+                        <i class="el-icon-house"></i>
+                            <span slot="title">系统首页</span>
+                    </el-menu-item>
+                    <el-submenu index="1">
+                        <template slot="title">
+                            <i class="el-icon-menu"></i>
+                            <span>信息管理</span>
+                        </template>
+                        <el-menu-item>
+                            用户信息
+                        </el-menu-item>
+                        <el-menu-item>
+                            管理员信息
+                        </el-menu-item>
+                    </el-submenu>
+                    <el-submenu index="2">
+                        <template slot="title">
+                            <i class="el-icon-menu"></i>
+                            <span>选课管理</span>
+                        </template>
+                        <el-menu-item>
+                            课程信息
+                        </el-menu-item>
+                        <el-menu-item>
+                            选课
+                        </el-menu-item>
+                        <el-menu-item>
+                            选课结果
+                        </el-menu-item>
+                    </el-submenu>
+                    <el-submenu index="3">
+                        <template slot="title">
+                            <i class="el-icon-menu"></i>
+                            <span>综合查询</span>
+                        </template>
+                        <el-menu-item>
+                            成绩
+                        </el-menu-item>
+                        <el-menu-item>
+                            课表
+                        </el-menu-item>
+                    </el-submenu>
+                    <el-submenu index="4">
+                        <template slot="title">
+                            <i class="el-icon-menu"></i>
+                            <span>考务管理</span>
+                        </template>
+                        <el-menu-item>
+                            考试信息
+                        </el-menu-item>
+                        <el-menu-item>
+                            考表查询
+                        </el-menu-item>
+                    </el-submenu>
+                </el-menu>
+            </el-aside>
+            <el-container>
+                <el-header style="display:flex;align-items:center;justify-content:end;height:60px;background-color: #87ceeb;padding:0 !important">
+                    <i class="el-icon-menu" style="width:40px;margin-top:10px" @click="handleCollapse" ></i>
+                    <div style="background-color: gray;color:white;height:60px;width:80px;display:flex;align-items:center;justify-content:center;margin-left:10px">
+                        搜索
+                        <i class="el-icon-search" style="width:30px;margin-left:0;margin-top:5px"></i>
+                    </div>
+                    <div style="background-color: green;color:white;height:60px;width:110px;display:flex;align-items:center;justify-content: flex-end;">
+                        学校校历
+                        <i class="el-icon-date" style="width:30px;margin-left:0;margin-top:5px"></i>
+                    </div>
+                    <div style="background-color: #87ceeb;;color:white;height:60px;width:120px;display:flex;align-items:center;justify-content: flex-end;">
+                        作息时间表
+                        <i class="el-icon-timer" style="width:30px;margin-left:0;margin-top:5px"></i>
+                    </div>
+                    <div style="display:flex;align-items:center;flex-direction:column;color:white;background-color: #87ceeb;margin-left:0">
+                        <img src="@/assets/qq_pic_merged_1770039574277.jpg" alt="" style="width:40px;height:35px">
+                        <span style="font-size:12px;color:white;margin-top:0">旺仔</span>
+                        
+                    </div>
+                </el-header>
+                <el-main style="display:flex;flex-direction: column;margin-top:0 !important;padding:0 !important">
+                    <div style="background-color: beige;color:black;height:50px;margin-top:0;display:flex;align-items: center;">
+                        <i class="el-icon-house" style="margin-left:2px"></i>
+                        <strong style="color:aqua;margin-left:5px">首页</strong>
+                    </div>
+                    <div style="display:flex;flex-direction: row;margin-top:0;padding:0">
+                        <div style="display:flex;flex-direction: column;margin-top:0;padding:5px;width:50%">
+                            <span style="background-color:aliceblue;margin-left:10px;color:black">通知</span>
+                            <div style="display:flex;flex-direction: column;margin-top:0;padding:0">
+                                <div style="display:flex;">
+                                    <div style="width:60%">
+                                        <i class="el-icon-bell" style="color:red"></i>
+                                        <span style="margin-left:10px">通知1</span>
+                                    </div>
+                                    <div style="width:40%;display:flex;align-items: center;justify-content: end;">
+                                        <i class="el-icon-timer"></i>
+                                        <span>date1</span>
+                                    </div>
+                                </div>
+                                <div style="display:flex;">
+                                    <div style="width:60%">
+                                        <i class="el-icon-bell" style="color:red"></i>
+                                        <span style="margin-left:10px">通知2</span>
+                                    </div>
+                                    <div style="width:40%;display:flex;align-items: center;justify-content: end;">
+                                        <i class="el-icon-timer"></i>
+                                        <span>date2</span>
+                                    </div>
+                                </div>
+                                <div style="display:flex;">
+                                    <div style="width:60%">
+                                        <i class="el-icon-bell" style="color:red"></i>
+                                        <span style="margin-left:10px">通知3</span>
+                                    </div>
+                                    <div style="width:40%;display:flex;align-items: center;justify-content: end;">
+                                        <i class="el-icon-timer"></i>
+                                        <span>date3</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="background-color:aliceblue;padding:0;">
+                                <span style="margin-left:10px;color:black">我的待办任务</span>
+                            </div>
+                            <div style="display:flex;flex-direction: column;">
+                                <span>暂无</span>
+                            </div>
+                            <div style="background-color:aliceblue;padding:0;">
+                                <span style="margin-left:10px;color:black">业务</span>
+                            </div>
+                        </div>
+                        <div style="display:flex;flex-direction: column;margin-top:0;padding:5px">
+
+                        </div>
+                    </div>
+                </el-main>
+            </el-container>
+        </el-container>
+    </div>
+</template>
+<script>
+export default{
+    name:"test1_0",
+    data () {
+        return {
+            isCollapse: false, //不收缩
+            asideWidth: '200px'
+        }
+    },
+    methods:{
+        handleCollapse() {
+            this.isCollapse=!this.isCollapse
+            this.asideWidth=this.isCollapse ? '64px':'200px'
+        }
+    }
+}
+</script>
+<style>
+.el-menu--inline{
+    background-color:#000c17 !important;
+}
+.el-menu--inline .el-menu-item {
+    background-color: #000c17 !important;
+    padding-left:50px !important;
+}
+.el-menu-item:hover,.el-submenu__title:hover{
+    color:#fff !important;
+}
+.el-submenu__title:hover i {
+    color:#fff !important;
+}
+.el-menu-item.is-active {
+    background-color:#40a9ff !important;
+    border-radius:5px;
+    margin:5px;
+}
+.el-menu-item{
+    height:40px;
+    line-height:40px;
+    margin:5px;
+}
+.el-submenu__title{
+    height:40px;
+    line-height:40px;
+    margin:5px;
+}
+.el-aside{
+    box-shadow: 2px 0 6px rgba(0,21,41,.35);
+}
+.el-header{
+    box-shadow: 2px 0 6px rgba(0,21,41,.35);
+    height:60px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+}
+</style>
