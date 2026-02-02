@@ -1,0 +1,197 @@
+n=int(input())
+list1=[]
+tiny12={}
+tiny25={}
+for i in range(n):
+    list1.append(input())
+for x in list1:
+    print(get_result(x))
+def get_result(s):
+    if len(s)!=72:
+        return 0
+    else:
+        if s[0]=='0':
+            return get_simple(s)
+        else:
+            return get_complex(s)
+def get_ten(s):
+    s1=s[::-1]
+    len1=len(s1)
+    sum=0
+    for i in range(len1):
+        sum+=int(s1[i])*(2**i)
+    return sum
+def get_38zm(a):
+    lsit1=[]
+    while a>0:
+        list1.append(a%38)
+        a=a//38
+    for i in range(len(list1)):
+        if list1[i]==0:
+            list1[i]=' '
+        elif list1[i]>=1 and list1[i]<=10:
+            list1[i]=list1[i]-1
+        elif list1[i]>=11 and list1[i]<=36:
+            list1[i]=chr(ord(list1[i])-ord(11)+ord('A'))
+        else:
+            list1[i]='_'
+    result=''.join(list1)
+    return result
+def czm_to_num(s):
+    list0=[]
+    for x in s:
+        if x==' ':
+            list0.append(0)
+        elif x>='0' and x<='9':
+            list0.append(ord(x)-ord('0')+1)
+        elif x>='A' and x<='Z':
+            list0.append(ord(x)-ord('A')+11)
+        else:
+            list0.append(37)
+    while len(list0)<11:
+        list0.append(0)
+    list0.reverse()
+    sum=0
+    for i in range(len(list0)):
+        sum+=list0[i]*(38**i)
+    return sum
+def get_sym_to_num(s1):
+    list0=[]
+    if len(s1)==5:
+        list0.append(' ')
+        list0.append(s1)
+        s1=''.join(list0)
+    for x in s1:
+        list0.append(x)
+    for i in range(len(list0)):
+        match i:
+            case 0:
+               if list0[i]==' ':list0[i]=0
+               elif list0[i]>='0' and list0[i]<='9':
+                    list0[i]=ord(list0[i])-ord('0')+1
+               else:
+                   list0[i]=ord(list0[i])-ord('A')+11
+            case 1:
+                if list0[i]>='0' and list0[i]<='9':
+                    list0[i]=ord(list0[i])-ord('0')
+                else:
+                    list0[i]=ord(list0[i])-ord('A')+10
+            case 2:
+                list0[i] = ord(list0[i]) - ord('0')
+            case _:
+                list0[i]=ord(list0[i]) - ord('A')
+    sum=list0[0]*360*26**3+list0[1]*10*26**3+list0[2]*26**3+list0[3]*26**2+list0[4]*26+list0[5]
+    return sum
+def get_slz(a,n):
+    a*=47055833459
+    a=a//2**(64-n)
+    a=a%(2**n)
+    return a
+def decode_number(n):
+    def num_to_char(val, position=1):
+        if position == 1:
+            if val == 0:
+                return ' '
+            elif 1 <= val <= 10:
+                return str(val - 1)
+            elif 11 <= val <= 36:
+                return chr(val - 11 + ord('A'))
+        else:
+            if 0 <= val <= 9:
+                return str(val)
+            elif 10 <= val <= 35:
+                return chr(val - 10 + ord('A'))
+    def char_to_num(c, position=1):
+        if position == 1:
+            if c == ' ':
+                return 0
+            elif c.isdigit():
+                return int(c) + 1
+            elif c.isupper():
+                return ord(c) - ord('A') + 11
+        else: # Table 3
+            if c.isdigit():
+                return int(c)
+            elif c.isupper():
+                return ord(c) - ord('A') + 10
+    c6_val = n % 26
+    n1 = n // 26
+    c5_val = n1 % 26
+    n2 = n1 // 26
+    c4_val = n2 % 26
+    n3 = n2 // 26
+    c3_val = n3 % 10
+    mid_val = n3 // 10
+    c2_val = mid_val % 36
+    c1_val = mid_val // 36
+    c1 = num_to_char(c1_val, 1)
+    c2 = num_to_char(c2_val, 2)
+    c3 = num_to_char(c3_val, 2)
+    c4 = chr(c4_val + ord('A'))
+    c5 = chr(c5_val + ord('A'))
+    c6 = chr(c6_val + ord('A'))
+    code = c1 + c2 + c3 + c4 + c5 + c6
+    return code.strip()
+def get_simple(s):
+    s1=s[1:29]
+    s2=s[29:57]
+    s3=s[57:]
+    a=get_ten(s1)
+    b=get_ten(s2)
+    c=get_ten(s3)
+    st1=''
+    if a>=2**25:
+        a-=2**25
+        st1=decode_number(a)
+    else:
+        for x,y in tiny25.items:
+            if y==a:
+                st1='#'+x
+    st2=''
+    if b>=2**25:
+        b-=2**25
+        st2=decode_number(b)
+    else:
+        for x,y in tiny25.items:
+            if y==b:
+                st2='#'+x
+    if len(st1)==0:
+        st1='###'
+    if len(st2)==0:
+        st2='###'
+    list2=[]
+    list2.append(st1)
+    list2.append(' ')
+    list2.append(st2)
+    list2.append(' ')
+    list2.append(c)
+    str1=''.join(list2)
+    return str1
+def get_complex(s):
+    s1=s[1:59]
+    s2=s[59:71]
+    a=get_ten(s1)
+    b=get_ten(s2)
+    str1=get_38zm(a)
+    a1=get_slz(a,12)
+    a2=get_slz(a,25)
+    str2=''
+    for x,y in tiny12.items:
+        if y==b:
+            str2=x
+    tiny12['str1']=a1
+    tiny25['str1']=a2
+    list2=[]
+    list2.append(str1)
+    list2.append(' ')
+    if len(str2)>0:
+        list2.append('#'+str2)
+    else:
+        list2.append('###')
+    str=''.join(list2)
+    return str
+'''
+看完题目确定一些必要操作：二进制转十进制，字符串代号何数字转换，典型代码和数字转换（转换规则不同，分别写），依据首位将两种方式分开
+设置键值对记录已经出现过的字符串代码对应的12、25散列值，便于下面预测查找（时间顺序直接默认顺序），然后就是正常的截取二进制位转换操作就行了
+'''
+
