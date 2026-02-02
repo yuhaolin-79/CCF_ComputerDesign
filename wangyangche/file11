@@ -1,0 +1,45 @@
+#31
+n=int(input())
+m=int(input())
+st1=input()
+list0=st1.split()
+list1=[]
+site={}
+tinydict={}
+result=[]
+for i in range(len(list0)):
+    if list0[i]=='+':
+        list1.append(list1.pop()+"+"+list1.pop())
+    elif list0[i]=='-':
+        s1=list1.pop()
+        s2=list1.pop()
+        list1.append(s2+"-"+s1)
+    elif list0[i]=='*':
+        list1.append(list1.pop()+"*"+list1.pop())
+    else:
+        list1.append(list0[i])
+        if isalpha(list0[i][0]):
+            site.add(list0[i])
+str1=''.join(list1)
+import sympy as sp
+for i in range(m):
+     list2=input().split()
+     s0=x1
+     for x in site:
+         if list2[0]==x[1]:
+             s0=x
+             break
+     x=sp.Symbol(s0)
+     str2=sp.sympify(str1)
+     str3=sp.diff(str2,x)
+     list2=list2[1:]
+     num=len(list2)
+     for j in range(num):
+         k=j+1
+         s='x'+str(k)
+         tinydict[s]=list2[j]
+     result.append(str3.subs(tinydict))
+for x in result:
+    print(x)
+
+
