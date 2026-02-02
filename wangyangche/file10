@@ -1,0 +1,134 @@
+#26
+class User:
+    name=''
+    operate_number=0
+    operate_list=[]
+    variety_number=0
+    variety_list=[]
+    resource_number=0
+    resource_list=[]
+    group=[]
+    user_relation=[]
+    def __init__(self,name,operate_number,operate_list,variety_number,variety_list,resource_number,resource_list,group,user_relation):
+        self.name=name
+        self.operate_number=operate_number
+        self.operate_list=operate_list
+        self.variety_number=variety_number
+        self.variety_list=variety_list
+        self.resource_number=resource_number
+        self.resource_list=resource_list
+        self.group=group
+        self.user_relation=user_relation
+n=int(input())
+m=int(input())
+q=int(input())
+user_list=[]
+for i in range(n):
+    user=User()
+    s1=input()
+    list0=s1.split()
+    user.name=list0[0]
+    user.operate_number=int(list0[1])
+    a=int(list0[1])
+    user.operate_list=list0[2:2+a]
+    user.variety_number=int(list0[2+a])
+    b=int(list0[2+a])
+    user.variety_list=list0[a+3:a+3+b]
+    user.resource_number=int(list0[3+a+b])
+    if user.resource_number!=0:
+        user.resource_list=list0[a+4+b:]
+    else:
+        user.resource_list=[]
+    user_list.append(user)
+for i in range(m):
+    s1=input()
+    list0=s1.split()
+    a=-1
+    for k in range(len(user_list)):
+        if user_list[k].name==list0[0]:
+            a=k
+            break
+    b=int(list0[1])
+    if list0[2]=='u':
+        user_list[a].user_relation=list0[3:]
+    else:
+        user_list[a].group=list0[3:]
+for i in range(q):
+    s1=input()
+    list0=s1.split()
+    st1=list0[0]
+    a=-1
+    for k in range(len(user_list)):
+        for x in user_list[k].user_relation:
+            if x==st1:
+                a=k
+                break
+    if a!=-1:
+        b=int(list0[1])
+        check=0
+        index1=0
+        for x in user_list[a].operate_list:
+            if x==list0[2+b]:
+                for y in user_list[a].variety_list:
+                    if y==list0[3+b]:
+                        if len(user_list[a].resource_list)==0:
+                            check=1
+                            index1=1
+                            break
+                        else:
+                            for z in user_list[a].resource_list:
+                                if z==list0[4+b]:
+                                    check=1
+                                    index1=1
+                                    break
+                    if index1==1:
+                        break
+                if index1==1:
+                    break
+            if index1==1:
+                break
+        if check==1:
+            print(1)
+        else:
+            print(0)
+    else:
+        a=-1
+        b=int(list0[1])
+        list2=list0[2:2+b]
+        index2=0
+        for x in list2:
+            for y in range(len(user_list)):
+                for z in user_list[y].group:
+                    if z==x:
+                        a=y
+                        index2=1
+                        break
+                if index2==1:
+                    break
+            if index2==1:
+                break
+        if a==-1:
+            print(0)
+        else:
+            str1=list0[2+b]
+            qaq=0
+            for x in user_list[a].operate_list:
+                if x==str1:
+                    for y in user_list[a].variety_list:
+                        if y==list0[3+b]:
+                            if len(user_list[a].resource_list)==0:
+                                qaq=1
+                                break
+                            else:
+                                for z in user_list[a].resource_list:
+                                    if z==list0[4+b]:
+                                        qaq=1
+                                        break
+                                if qaq==1:
+                                    break
+                    if qaq==1:
+                        break
+            if qaq==1:
+                print(1)
+            else:
+                print(0)
