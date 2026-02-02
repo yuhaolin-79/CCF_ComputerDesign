@@ -1,0 +1,283 @@
+'''
+people=[]
+list1=[]
+for i in range(1,32):
+    people.append(1)
+check=0
+a=1
+j=0
+while a<=31:
+    if a==31:
+        a=1
+    elif j==15:
+        break
+    else:
+        if people[a]==0:
+            a+=1
+            continue
+        else:
+            check+=1
+            if check==9:
+                check=0
+                people[a]=0
+                list1.append(a)
+                j+=1
+            else:
+                a+=1
+                continue
+print(list1)
+'''
+'''
+list1=[]
+list2=[]
+while True:
+    str=input()
+    str=str.split()
+    if str[0]=='end':
+        break
+    list1.append(str[0])
+    list2.append(str[1])
+list3=[]
+for i in range(26):
+    list3.append(1)
+for s in list1:
+    for n in s:
+        list3[ord(n)-ord('a')]=0
+list4=[]
+for i in range(26):
+    if list3[i]==0:
+        list4.append(chr(i+ord('a')))
+count=len(list4)
+count_doubler=count**2
+tinydict={}
+for c in list4:
+    for d in list4:
+        tinydict[f'({c},{d})']=0
+print(tinydict)
+cnt=-1
+for s in list1:
+    cnt+=1
+    for i in range(len(s)-1):
+        for j in range(i+1,len(s)):
+            tinydict[f"({s[i]},{s[j]})"] += ord(list2[cnt])-ord('0')
+for i in range(len(list4)-1):
+    for j in range(i+1,len(list4)):
+        if list4[i]!=list4[j]:
+            tinydict[f"({list4[i]},{list4[j]})"],tinydict[f"({list4[j]},{list4[i]})"]=tinydict[f"({list4[i]},{list4[j]})"]+tinydict[f"({list4[j]},{list4[i]})"],0
+        else:
+            continue
+print(tinydict)
+查找所有单词中包含的所有字母，在用'（x,y）'=number的键值对方式记录不同/相同字母对拥有的数量，最后进行比较，选出数量最多，再重建字典，依次单词遍历查找（工作量大，应该只能适用于长度不太大），
+再逐个用键值对一一对应，直至键值对中存在x或y字符串长度等于最短单词长度，结束，使用集合记录键值对中键的类型，直接输出（相同舍弃）
+'''
+#替换字符串中的子串
+'''
+str1=input()
+l=len(str1)
+s1=input()
+s2=input()
+l1=len(s1)
+list1=[]
+cnt=str1.count(s1)
+if cnt>0:
+    x1=0
+    y1=0
+    while True:
+        y1=str1.find(s1,y1)
+        if y1==-1:
+            for i in range(x1,l):
+                list1.append(str1[i])
+            break
+        for i in range(x1,y1):
+            list1.append(str1[i])
+        list1.append(s2)
+        y1+=l1
+        x1=y1
+    str1=''.join(list1)
+    print(str1)
+else:
+    print(str1)
+'''
+'''
+import random
+n=int(input())
+p=n
+m=0
+while p>0:
+    x=random.uniform(-1,1)
+    y=random.uniform(-1,1)
+    if x**2+y**2<=1:
+        m+=1
+    p-=1
+print(4*m/n)
+'''
+'''
+def decode_number(n):
+    def num_to_char(val, position=1):
+        if position == 1:
+            if val == 0:
+                return ' '
+            elif 1 <= val <= 10:
+                return str(val - 1)
+            elif 11 <= val <= 36:
+                return chr(val - 11 + ord('A'))
+        else:
+            if 0 <= val <= 9:
+                return str(val)
+            elif 10 <= val <= 35:
+                return chr(val - 10 + ord('A'))
+    def char_to_num(c, position=1):
+        if position == 1:
+            if c == ' ':
+                return 0
+            elif c.isdigit():
+                return int(c) + 1
+            elif c.isupper():
+                return ord(c) - ord('A') + 11
+        else: # Table 3
+            if c.isdigit():
+                return int(c)
+            elif c.isupper():
+                return ord(c) - ord('A') + 10
+    c6_val = n % 26
+    n1 = n // 26
+    c5_val = n1 % 26
+    n2 = n1 // 26
+    c4_val = n2 % 26
+    n3 = n2 // 26
+    c3_val = n3 % 10
+    mid_val = n3 // 10
+    c2_val = mid_val % 36
+    c1_val = mid_val // 36
+    c1 = num_to_char(c1_val, 1)
+    c2 = num_to_char(c2_val, 2)
+    c3 = num_to_char(c3_val, 2)
+    c4 = chr(c4_val + ord('A'))
+    c5 = chr(c5_val + ord('A'))
+    c6 = chr(c6_val + ord('A'))
+    code = c1 + c2 + c3 + c4 + c5 + c6
+    return code.strip()
+result = decode_number(n)
+print(f"还原结果: {result}")
+# 输出: 还原结果: A0BCD
+'''
+'''
+a={'zhangsan':'18'}
+c=a
+print(c['zhangsan'])
+a['zhangsan']='20'
+print(c['zhangsan'])
+tiny={}
+tiny['a']=18
+tiny['b']=tiny['a']
+print(tiny['b'])
+tiny['a']=20
+print(tiny['b'])
+'''
+'''
+list1=[]
+tinydict={}
+list2=['1','a','good']
+list3=['2','c','$a']
+list2[1]=[]
+list3[1]=list2[1]
+list2[1].append(list2[2])
+list1.append(list2[1])
+list1.append(list3[1])
+print(list1)
+list2[1][0]='hello'
+print(list1)
+'''
+'''
+import sys
+
+
+def evaluate(token, var_dict):
+    # 1. 如果不是变量引用，直接返回原内容
+    if not token.startswith('$'):
+        return token
+
+    # 2. 提取变量名
+    var_name = token[1:]
+
+    # 3. 安全检查：变量不存在
+    if var_name not in var_dict:
+        return ""
+
+    val_type, val_content = var_dict[var_name]
+
+    # 4. 直接赋值：返回存储的字符串
+    if val_type == 0:
+        return val_content
+    # 5. 间接赋值：递归解析表达式列表
+    else:
+        # 关键：对列表中的每个 token 递归求值，然后拼接
+        return "".join(evaluate(t, var_dict) for t in val_content)
+
+
+def main():
+    variables = {}
+    MOD = 1000000007
+
+    for line in sys.stdin:
+        line = line.strip()
+        if not line:
+            continue
+
+        parts = line.split()
+        cmd = parts[0]
+
+        try:
+            if cmd == '1' or cmd == '2':
+                # 防止只有指令没有参数
+                if len(parts) < 3:
+                    continue
+                var_name = parts[1]
+                expr_tokens = parts[2:]
+
+                if cmd == '1':
+                    # 立即求值并存储结果
+                    resolved_val = "".join(evaluate(token, variables) for token in expr_tokens)
+                    variables[var_name] = (0, resolved_val)
+                elif cmd == '2':
+                    # 只存储表达式，不求值
+                    variables[var_name] = (1, expr_tokens)
+
+            elif cmd == '3':
+                if len(parts) < 2:
+                    continue
+                var_name = parts[1]
+                if var_name in variables:
+                    current_val = evaluate(var_name, variables)
+                    print(len(current_val) % MOD)
+        except Exception:
+            # 忽略处理过程中的任何错误，继续下一行
+            pass
+
+
+if __name__ == "__main__":
+    main()
+    '''
+'''
+这里主要是考虑一个变量的改变影响其他变量的值，那么在查找变量长度时可以利用一个固定列表存储前面为1，即不受其他变量影响的变量（其实一开始想用键值对进行存储管理的，毕竟可变，但后来因为递归操作这个要求反而省略了）
+接着下面一步步分析操作，遇到开头为1的直接改变列表中值，如果遇到受影响的变量，直接带到函数中运用递归方式逐渐深入，直至找到准确字符串，拼接起来计算长度
+'''
+'''
+s1='12'
+print(int(s1))
+'''
+'''
+import sympy as sp
+x1=sp.Symbol('x1')
+str1='x1*x1*x1+x1*x2+2'
+str2=sp.sympify(str1)
+print(str2)
+str3=sp.diff(str2,x1)
+print(str3)
+x2='x2'
+print(str3.subs({x1:1,x2:2}))
+'''
+
+list1=['abc','123','nihao','?']
+list1.remove(list1[2])
+print(list1)
