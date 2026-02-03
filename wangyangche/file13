@@ -1,0 +1,48 @@
+<template>
+  <Test1_1/>
+</template>
+
+<script>
+
+import Test1_1 from './test1_1.vue';
+
+export default {
+  name: 'App',
+  components: {
+    
+    Test1_1
+  }
+}
+</script>
+
+<style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+</style>
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+Vue.use(VueRouter)
+const routes = [
+  {
+    path: '/',        // 路由路径（访问根路径时匹配）
+    name: 'home',     // 路由名称（编程式导航时用，如 this.$router.push({ name: 'home' })）
+    component: () => import('../test1_1.vue') // 懒加载组件（按需加载，提升性能）
+  },
+  {
+    path: '/element', // 路由路径（访问 /element 时匹配）
+    name: 'Element',  // 路由名称
+    component: () => import('../test1_1.vue')  // 懒加载 Element 页面组件
+  }
+]
+const router = new VueRouter({
+  mode: 'history',          // 路由模式：history 模式（无 # 号，更美观；需后端配合避免 404）
+  base: process.env.BASE_URL, // 基础路径（默认为 `/`，多用于部署子路径场景）
+  routes                       // 注入上面定义的路由规则
+})
+export default router
