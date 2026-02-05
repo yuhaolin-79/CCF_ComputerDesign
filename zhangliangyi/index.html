@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>🌤️ 天气查询</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🌤️ 天气查询系统</h1>
+        <form method="POST" action="{{ url_for('get_weather') }}">
+            <!-- ✅ 修改1：placeholder 增加拼音提示（关键！） -->
+            <input type="text" name="city" placeholder="请输入城市（推荐：北京 / beijing / Shanghai / Tokyo）" required>
+            <button type="submit">🔍 查询</button>
+        </form>
+
+        {% if error %}
+        <div class="error">{{ error|safe }}</div> <!-- ✅ 添加 |safe 支持HTML提示 -->
+        {% endif %}
+
+        {% if city %}
+        <div class="weather-card">
+            <h2>{{ city }} 天气</h2>
+            <img src="{{ icon }}" alt="天气图标" class="weather-icon">
+            <div class="temp">{{ temp }}°C</div>
+            <div class="condition">{{ condition }}</div>
+            <div class="tips">{{ tips }}</div>
+        </div>
+        {% endif %}
+
+        <!-- ✅ 修改2：footer 增加关键说明（消除用户困惑） -->
+        <div class="footer">
+            <p>📍 中国城市显示中文名｜国外城市显示英文名（天气描述均为中文）</p>
+            <p>💡 输入技巧：拼音更稳定（如 beijing 代替 北京）</p>
+            <p>Python Flask + OpenWeatherMap API</p>
+        </div>
+    </div>
+</body>
+</html>
