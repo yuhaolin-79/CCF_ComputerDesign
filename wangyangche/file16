@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全球二氧化碳浓度重建 - 实验项目展示</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0f0f12;
+            color: #c5c5c5;
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.9;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 全宽固定导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0; /* 贴近顶部 */
+            left: 0; /* 贴近左边 */
+            width: 100%; /* 占满整个页面宽度 */
+            display: flex;
+            justify-content: flex-end; /* 内容靠右对齐 */
+            align-items: center; /* 垂直居中 */
+            z-index: 1000;
+            /* 添加背景色 */
+            background-color: rgba(15, 15, 18, 0.95);
+            padding: 12px 20px; /* 内边距 */
+            border-bottom: 1px solid #2a2a35; /* 下边框 */
+            backdrop-filter: blur(10px); /* 毛玻璃效果 */
+        }
+
+        .brand-name {
+            position: absolute; /* 绝对定位脱离文档流 */
+            left: 20px; /* 固定在左边 */
+            font-size: 1.3em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00dbde, #fc00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            white-space: nowrap; /* 防止文字换行 */
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            background-color: rgba(26, 26, 31, 0.8);
+            color: #c5c5c5;
+            padding: 10px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9em;
+            border: 1px solid #2a2a35;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(0, 219, 222, 0.2);
+            color: #00dbde;
+            border-color: #00dbde;
+        }
+
+        /* 高亮状态 */
+        .nav-link.active {
+            background-color: rgba(0, 219, 222, 0.3);
+            color: #00dbde;
+            border-color: #00dbde;
+        }
+
+        /* 首页样式 - 添加顶部边距以避开导航栏 */
+        .home-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            margin-top: -60px; /* 抵消导航栏高度 */
+        }
+
+        .home-title-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 3em;
+            color: #ffffff;
+            margin-bottom: 0; /* 移除间距，让两行紧贴 */
+            font-weight: 400;
+        }
+
+        .main-title {
+            font-size: 4.5em;
+            background: linear-gradient(45deg, #00dbde, #fc00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(0, 219, 222, 0.3);
+        }
+
+        .home-subtitle {
+            font-size: 1.8em;
+            color: #a0a0a0;
+            margin-bottom: 40px;
+            max-width: 800px;
+        }
+
+        .scroll-indicator {
+            color: #7a7a8c;
+            font-size: 0.9em;
+            margin-top: 40px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+
+        /* 通用标题样式 */
+        .section-title {
+            font-size: 1.4em;
+            color: #00dbde;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 60px 0 30px 0;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(45deg, #00dbde, #fc00ff);
+        }
+
+        /* 实验背景三栏布局 */
+        .background-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .bg-card {
+            background-color: #1a1a1f;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #2a2a35;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .bg-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 219, 222, 0.15);
+            border-color: #00dbde;
+        }
+
+        .bg-card h3 {
+            color: #fc00ff;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        /* 实验内容垂直布局 */
+        .content-vertical-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .content-card {
+            background-color: #1a1a1f;
+            padding: 35px;
+            border-radius: 10px;
+            border: 1px solid #2a2a35;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .content-card h3 {
+            color: #00dbde;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .content-card p {
+            font-size: 1.2em;
+            line-height: 1.9;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+        }
+
+        .content-card strong {
+            color: #fc00ff;
+            font-weight: 700;
+        }
+
+        .content-card ul, .content-card ol {
+            margin-left: 25px;
+            margin-top: 15px;
+        }
+
+        .content-card li {
+            margin-bottom: 12px;
+        }
+
+        /* 内容主体样式 */
+        .content-body {
+            font-size: 1.2em;
+            line-height: 1.9;
+            color: #e0e0e0;
+            background-color: #1a1a1f;
+            padding: 35px;
+            border-radius: 10px;
+            border: 1px solid #2a2a35;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .content-body strong {
+            color: #fc00ff;
+            font-weight: 700;
+        }
+
+        .content-body .highlight {
+            color: #00ffaa;
+            font-weight: 700;
+            font-size: 1.3em;
+        }
+
+        .content-body ul, .content-body ol {
+            margin-left: 25px;
+            margin-top: 15px;
+        }
+
+        .content-body li {
+            margin-bottom: 12px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #4a4a55;
+            font-size: 0.9em;
+            border-top: 1px solid #2a2a35;
+            margin-top: 50px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .background-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .subtitle {
+                font-size: 2.4em;
+            }
+            
+            .main-title {
+                font-size: 3em;
+            }
+            
+            .home-subtitle {
+                font-size: 1.4em;
+            }
+            
+            .navbar {
+                flex-direction: row; /* 保持水平方向 */
+                justify-content: space-between; /* 两端对齐 */
+                padding: 10px 15px;
+            }
+            
+            .brand-name {
+                left: 15px; /* 小屏幕上的位置调整 */
+                font-size: 1.1em;
+            }
+            
+            .nav-links {
+                gap: 8px; /* 缩小链接间距 */
+            }
+            
+            .nav-link {
+                padding: 8px 12px;
+                font-size: 0.8em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .subtitle {
+                font-size: 2em;
+            }
+            
+            .main-title {
+                font-size: 2.5em;
+            }
+            
+            .home-subtitle {
+                font-size: 1.2em;
+            }
+            
+            .navbar {
+                padding: 8px 10px;
+            }
+            
+            .brand-name {
+                left: 10px;
+                font-size: 1em;
+            }
+            
+            .nav-links {
+                gap: 5px;
+            }
+            
+            .nav-link {
+                padding: 6px 10px;
+                font-size: 0.75em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 全宽固定导航栏 -->
+    <div class="navbar">
+        <!-- 品牌标识 -->
+        <div class="brand-name">灵犀智碳</div>
+        
+        <!-- 导航链接容器 -->
+        <div class="nav-links">
+            <a href="#home" class="nav-link active">首页</a>
+            <a href="#background" class="nav-link">项目背景</a>
+            <a href="#content" class="nav-link">实验模型</a>
+            <a href="#results" class="nav-link">实验结果</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 首页部分 -->
+        <section id="home" class="home-section">
+            <div class="home-title-container">
+                <div class="subtitle">基于深度学习的</div>
+                <h1 class="main-title">全球二氧化碳浓度重建</h1>
+            </div>
+            <p class="home-subtitle">专业实验项目中期汇报</p>
+            <p class="scroll-indicator">向下滚动查看详细内容</p>
+        </section>
+
+        <!-- 实验背景 -->
+        <section id="background">
+            <h2 class="section-title">01. 实验背景</h2>
+            
+            <div class="background-grid">
+                <!-- 研究背景 -->
+                <div class="bg-card">
+                    <h3>🔍 研究背景</h3>
+                    <p>
+                        <strong>领域现状：</strong> 随着半导体工艺逼近物理极限，传统硅基芯片的摩尔定律面临失效。
+                    </p>
+                    <p>
+                        <strong>技术趋势：</strong> 量子隧穿效应导致的漏电问题日益严重，亟需寻找新的计算范式。
+                    </p>
+                    <p>
+                        <strong>数据支撑：</strong> 根据IEEE最新报告，全球算力需求每3.5个月翻一番，远超硬件发展速度。
+                    </p>
+                </div>
+
+                <!-- 传统模型 -->
+                <div class="bg-card">
+                    <h3>🧩 传统模型</h3>
+                    <p>
+                        <strong>经典计算：</strong> 依赖二进制逻辑门，通过电压高低表示0和1。
+                    </p>
+                    <p>
+                        <strong>局限性：</strong> 在处理大数分解、复杂分子模拟等NP问题时，算力呈指数级下降。
+                    </p>
+                    <p>
+                        <strong>瓶颈：</strong> 冯·诺依曼架构的"存储墙"问题限制了数据吞吐效率。
+                    </p>
+                </div>
+
+                <!-- 研究意义 -->
+                <div class="bg-card">
+                    <h3>🚀 研究意义</h3>
+                    <p>
+                        <strong>理论价值：</strong> 验证量子叠加态在实际运算中的可行性，推动物理学与计算机科学的交叉。
+                    </p>
+                    <p>
+                        <strong>应用前景：</strong> 一旦突破，将在药物研发、密码破译、气象预测等领域产生颠覆性影响。
+                    </p>
+                    <p>
+                        <strong>国家战略：</strong> 属于"卡脖子"关键技术，对提升国家科技硬实力具有重大战略意义。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 实验内容 -->
+        <section id="content">
+            <h2 class="section-title">02. 实验模型</h2>
+            <div class="content-vertical-layout">
+                <!-- 传统模型不足 -->
+                <div class="content-card">
+                    <h3>⚠️ 传统模型不足</h3>
+                    <p><strong>数据局限性：</strong> 传统的二氧化碳浓度监测主要依赖地面站点观测，空间覆盖不均匀，尤其在海洋和极地地区存在大量数据空白区域。</p>
+                    
+                    <p><strong>时间分辨率低：</strong> 卫星遥感数据虽然能提供全球覆盖，但时间间隔较长，无法捕捉快速变化的局部浓度波动。</p>
+                    
+                    <p><strong>精度问题：</strong> 传统插值方法在处理非线性、多变量关系时精度有限，难以准确反映复杂的气候模式对二氧化碳分布的影响。</p>
+                    
+                    <p><strong>实时性差：</strong> 现有模型通常需要数小时甚至数天的时间来完成一次全球浓度场重建，无法满足实时监测需求。</p>
+                </div>
+
+                <!-- 新模型优势 -->
+                <div class="content-card">
+                    <h3>✨ 新模型优势</h3>
+                    <p><strong>深度学习能力：</strong> 利用卷积神经网络(CNN)和循环神经网络(RNN)的组合架构，能够自动提取时空特征并建模复杂的非线性关系。</p>
+                    
+                    <p><strong>多源数据融合：</strong> 整合卫星遥感、地面监测站、海洋浮标等多种数据源，显著提升空间覆盖率和数据密度。</p>
+                    
+                    <p><strong>高精度预测：</strong> 通过注意力机制，模型能够关注关键区域和时段，显著提高预测精度，特别是在数据稀疏区域。</p>
+                    
+                    <p><strong>实时处理能力：</strong> 模型经过优化后，能够在分钟级别完成全球浓度场重建，满足实时监测和预警需求。</p>
+                    
+                    <p><strong>关键步骤：</strong></p>
+                    <ol>
+                        <li><strong>数据预处理：</strong> 对多源异构数据进行标准化和质量控制。</li>
+                        <li><strong>模型训练：</strong> 使用历史数据训练深度学习模型，优化参数和架构。</li>
+                        <li><strong>实时推理：</strong> 输入最新的观测数据，生成全球二氧化碳浓度分布图。</li>
+                        <li><strong>结果验证：</strong> 与独立验证数据集对比，评估模型性能。</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- 实验结果 -->
+        <section id="results">
+            <h2 class="section-title">03. 实验结果</h2>
+            <div class="content-body">
+                <p><strong>数据汇总：</strong> 经过1000次重复采样，CNOT门的平均保真度达到了 <span class="highlight">92.4%</span>，较上一代模型提升了7%。</p>
+                
+                <p><strong>图表分析：</strong> （此处可插入图表）量子态布洛赫球分布图显示，实验数据点紧密聚集在目标态附近，离散度较低。</p>
+                
+                <p><strong>误差来源：</strong> 主要误差来源于环境热噪声（占比约5%）和脉冲串扰（占比约3%）。</p>
+                
+                <p><strong>结论展望：</strong> 实验结果验证了超导方案的可行性。下一步计划引入更高效的纠错码，并尝试扩展至4-qubit系统。</p>
+            </div>
+        </section>
+
+        <footer>
+            <p>汇报人：[你的名字] | 学号：[你的学号] | 日期：202X年X月X日</p>
+        </footer>
+    </div>
+
+    <script>
+        // 添加平滑滚动功能
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // 导航栏高亮功能
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if(pageYOffset >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if(link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
