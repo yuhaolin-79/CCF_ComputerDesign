@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO₂浓度重建 - 可视化交互区</title>
+    <style>
+        /* 整体样式：简洁专业，适配比赛展示 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        body {
+            background-color: #f5f8fa;
+            padding: 40px;
+        }
+        /* 交互区容器 */
+        .visual-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        /* 标题样式 */
+        .visual-title {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        /* 功能说明 */
+        .func-desc {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        .func-desc span {
+            color: #3498db;
+            font-weight: bold;
+        }
+        /* 操作区：上传+选择 */
+        .operate-area {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        /* 上传按钮样式 */
+        .upload-btn {
+            position: relative;
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .upload-btn:hover {
+            background-color: #2980b9;
+        }
+        .upload-btn input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .upload-tip {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+        /* 可视化类型选择 */
+        .visual-select {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #333;
+            min-width: 200px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .visual-select:focus {
+            border-color: #3498db;
+        }
+        /* 辅助控制按钮组 */
+        .control-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .control-btn {
+            padding: 8px 16px;
+            background-color: #ecf0f1;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .control-btn:hover {
+            background-color: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+        /* 结果展示区 */
+        .result-area {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            background-color: #f9f9f9;
+        }
+        .result-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s;
+        }
+        .result-tip {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #999;
+            text-align: center;
+        }
+        /* 辅助图表区 */
+        .chart-area {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .chart-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .chart-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            margin-top: 10px;
+        }
+        .chart-title {
+            font-size: 16px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="visual-container">
+        <!-- 标题 -->
+        <h2 class="visual-title">CO₂浓度重建 - 可视化交互区</h2>
+        
+        <!-- 功能说明 -->
+        <div class="func-desc">
+            操作流程：<span>上传数据集文件</span> → <span>选择可视化类型</span> → <span>查看重建结果</span>
+            <br>
+            支持对全球/局部CO₂浓度数据进行可视化展示，可切换年份/区域、缩放查看细节
+        </div>
+        
+        <!-- 操作区：上传+选择 -->
+        <div class="operate-area">
+            <!-- 上传按钮 -->
+            <div class="upload-wrap">
+                <label class="upload-btn">
+                    上传数据集
+                    <input type="file" id="fileUpload" accept=".csv,.xlsx,.xls">
+                </label>
+                <div class="upload-tip">支持格式：CSV / Excel | 示例数据集：CarbonTracker/CMIP6</div>
+            </div>
+            
+            <!-- 可视化类型选择 -->
+            <select class="visual-select" id="visualType">
+                <option value="global">全球热力图</option>
+                <option value="local">局部趋势图</option>
+                <option value="compare">长短期对比图</option>
+            </select>
+        </div>
+        
+        <!-- 辅助控制按钮 -->
+        <div class="control-group">
+            <button class="control-btn" id="zoomIn">放大</button>
+            <button class="control-btn" id="zoomOut">缩小</button>
+            <button class="control-btn" id="switch2000">切换2000年</button>
+            <button class="control-btn" id="switch2020">切换2020年</button>
+            <button class="control-btn" id="switchArea">切换亚马逊区域</button>
+        </div>
+        
+        <!-- 结果展示区 -->
+        <div class="result-area" id="resultArea">
+            <div class="result-tip">请上传数据集并选择可视化类型查看结果</div>
+            <!-- 图片会通过JS动态插入 -->
+        </div>
+        
+        <!-- 辅助图表区 -->
+        <div class="chart-area">
+            <div class="chart-item">
+                <div class="chart-title">全球重建效果对比表</div>
+                <img src="对比表.png" alt="全球重建效果对比表">
+            </div>
+            <div class="chart-item">
+                <div class="chart-title">2000-2020长期趋势折线图</div>
+                <img src="长期趋势图.png" alt="2000-2020长期趋势折线图">
+            </div>
+            <div class="chart-item">
+                <div class="chart-title">亚马逊野火短期变化曲线图</div>
+                <img src="短期事件图.png" alt="亚马逊野火短期变化曲线图">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 核心交互逻辑：模拟上传、切换图片、缩放等
+        // 1. 模拟上传文件逻辑
+        const fileUpload = document.getElementById('fileUpload');
+        const resultArea = document.getElementById('resultArea');
+        let currentImg = null; // 当前显示的图片
+        let scale = 1; // 缩放比例
+        
+        // 预设图片路径（你需要替换成自己的图片路径）
+        const imgMap = {
+            global: {
+                2000: "全球热力图2000.png",
+                2020: "全球热力图2020.png",
+                default: "全球热力图2020.png"
+            },
+            local: {
+                2000: "亚马逊趋势图2000.png",
+                2020: "亚马逊趋势图2020.png",
+                default: "亚马逊趋势图2020.png"
+            },
+            compare: {
+                2000: "长短期对比图2000.png",
+                2020: "长短期对比图2020.png",
+                default: "长短期对比图.png"
+            }
+        };
+        
+        // 上传文件触发
+        fileUpload.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                // 模拟上传成功提示
+                alert(`文件 "${e.target.files[0].name}" 上传成功！`);
+                // 默认显示选中类型的默认图片
+                showDefaultImg();
+            }
+        });
+        
+        // 可视化类型选择变化
+        const visualType = document.getElementById('visualType');
+        visualType.addEventListener('change', showDefaultImg);
+        
+        // 显示默认图片
+        function showDefaultImg() {
+            const type = visualType.value;
+            const imgSrc = imgMap[type].default;
+            renderImg(imgSrc);
+        }
+        
+        // 渲染图片到结果区
+        function renderImg(src) {
+            // 清空结果区
+            resultArea.innerHTML = '';
+            // 创建图片元素
+            currentImg = document.createElement('img');
+            currentImg.src = src;
+            currentImg.className = 'result-img';
+            currentImg.style.transform = `scale(${scale})`;
+            resultArea.appendChild(currentImg);
+        }
+        
+        // 2. 缩放功能
+        const zoomIn = document.getElementById('zoomIn');
+        const zoomOut = document.getElementById('zoomOut');
+        
+        zoomIn.addEventListener('click', function() {
+            if (!currentImg) return alert('请先上传数据集查看图片！');
+            scale += 0.1;
+            currentImg.style.transform = `scale(${scale})`;
+        });
+        
+        zoomOut.addEventListener('click', function() {
+            if (!currentImg) return alert('请先上传数据集查看图片！');
+            if (scale <= 0.5) return; // 最小缩放0.5倍
+            scale -= 0.1;
+            currentImg.style.transform = `scale(${scale})`;
+        });
+        
+        // 3. 切换年份
+        const switch2000 = document.getElementById('switch2000');
+        const switch2020 = document.getElementById('switch2020');
+        
+        switch2000.addEventListener('click', function() {
+            if (!currentImg) return alert('请先上传数据集查看图片！');
+            const type = visualType.value;
+            renderImg(imgMap[type][2000]);
+        });
+        
+        switch2020.addEventListener('click', function() {
+            if (!currentImg) return alert('请先上传数据集查看图片！');
+            const type = visualType.value;
+            renderImg(imgMap[type][2020]);
+        });
+        
+        // 4. 切换区域（示例：切换亚马逊区域）
+        const switchArea = document.getElementById('switchArea');
+        switchArea.addEventListener('click', function() {
+            if (!currentImg) return alert('请先上传数据集查看图片！');
+            // 模拟切换区域：这里默认切换到亚马逊局部图
+            renderImg(imgMap['local'].default);
+            // 同步修改下拉框选中状态
+            visualType.value = 'local';
+        });
+    </script>
+</body>
+</html>
