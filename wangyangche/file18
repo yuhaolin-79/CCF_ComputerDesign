@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>灵犀智碳 - 全球二氧化碳浓度重建</title>
+  <style>
+    /* 全局样式 */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #000010;
+      color: #a0d8ff;
+      scroll-behavior: smooth;
+    }
+
+    /* 头部导航 */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(0, 0, 0, 0.9);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(60, 100, 255, 0.2);
+      overflow: visible;
+    }
+
+    .logo {
+      color: #b059ff;
+      font-weight: bold;
+      text-decoration: none;
+      font-size: 1.3rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: #00cfff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 1.8rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-menu a {
+      color: #6680ff;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+
+    .nav-menu a.active {
+      color: #b059ff;
+      font-weight: 500;
+      transform: scale(1.05);
+    }
+
+    /* 响应式断点 */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .nav-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: rgba(10, 10, 20, 0.95);
+        flex-direction: column;
+        gap: 0;
+        padding: 1rem 0;
+        clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+        transition: clip-path 0.3s ease-in-out;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+      }
+
+      .nav-menu.show {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      }
+
+      .nav-menu a {
+        padding: 0.8rem 2rem;
+        display: block;
+        color: #a0d8ff;
+      }
+
+      .nav-menu a:hover {
+        background: rgba(0, 100, 255, 0.1);
+      }
+    }
+
+    /* 首页主标题 */
+    main#home {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 0 2rem;
+      margin-top: 4rem; /* 避免被固定 header 遮挡 */
+    }
+
+    .title-line-1 {
+      font-size: 2.6rem;
+      color: #a0d8ff;
+      margin-bottom: 0.5rem;
+      opacity: 0.9;
+    }
+
+    .title-line-2 {
+      font-size: 3.0rem;
+      background: linear-gradient(90deg, #00cfff, #00ffff, #b059ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 
+        0 0 10px rgba(0, 200, 255, 0.7),
+        0 0 20px rgba(0, 200, 255, 0.5),
+        0 0 30px rgba(176, 89, 255, 0.4);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    /* 项目背景 - 三栏布局 */
+    section#background {
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .card {
+      background: rgba(10, 10, 20, 0.7);
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 0 15px rgba(0, 100, 255, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    h2 {
+      color: #00cfff;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    /* 实验模型 - 切换功能 */
+    section#content {
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      color: #00ffff;
+      border: 1px solid #00ffff;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      margin-right: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .toggle-btn:hover {
+      background: rgba(0, 255, 255, 0.15);
+    }
+
+    .model-content {
+      margin-top: 1rem;
+      padding: 1.5rem;
+      background: rgba(10, 10, 20, 0.6);
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 100, 255, 0.1);
+    }
+
+    /* 实验结果 - 统一格式 */
+    section#results {
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .result-card {
+      background: rgba(10, 10, 20, 0.7);
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 0 15px rgba(0, 100, 255, 0.1);
+      margin-top: 1rem;
+    }
+
+    /* 生成图像 */
+    section#generate-image {
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .upload-area {
+      background: rgba(10, 10, 20, 0.6);
+      border: 2px dashed #00cfff;
+      border-radius: 10px;
+      padding: 2rem;
+      margin: 2rem auto;
+      max-width: 500px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .upload-area:hover {
+      background: rgba(10, 10, 20, 0.8);
+      border-color: #00ffff;
+    }
+
+    .btn-generate {
+      background: linear-gradient(90deg, #00cfff, #00ffff);
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      font-size: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      margin-top: 1rem;
+      box-shadow: 0 0 15px rgba(0, 200, 255, 0.6);
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    .btn-generate:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(0, 200, 255, 0.8);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: rgba(10, 10, 20, 0.95);
+      border-radius: 10px;
+      padding: 2rem;
+      width: 80%;
+      max-width: 600px;
+      box-shadow: 0 0 30px rgba(0, 200, 255, 0.5);
+      position: relative;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      color: #ccc;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .return-btn {
+      margin-top: 1.5rem;
+      background: rgba(0, 200, 255, 0.2);
+      color: #00ffff;
+      border: 1px solid #00ffff;
+      padding: 0.5rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .return-btn:hover {
+      background: rgba(0, 255, 255, 0.3);
+    }
+
+    .result-img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 200, 255, 0.4);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="#home" class="logo">灵犀智碳</a>
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+  <nav id="mainNav" class="nav-menu">
+    <a href="#home" data-section="home">首页</a>
+    <a href="#background" data-section="background">项目背景</a>
+    <a href="#content" data-section="content">实验模型</a>
+    <a href="#results" data-section="results">实验结果</a>
+    <a href="#generate-image" data-section="generate-image">生成图像</a>
+  </nav>
+</header>
+
+<main id="home">
+  <div class="title-line-1">基于深度学习的</div>
+  <div class="title-line-2">全球二氧化碳浓度重建</div>
+</main>
+
+<section id="background">
+  <h2>项目背景</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>研究背景</h3>
+      <p>二氧化碳浓度持续上升加剧全球气候变化，需精准掌握其时空分布以支撑气候治理与“双碳”战略实施。</p>
+      <p>全球CO₂观测站点稀疏，尤其在海洋等区域存在大量数据空白，传统监测手段难以实现全面覆盖。</p>
+      <p>人工智能技术快速发展为高精度、高效率重建全球CO₂浓度提供了新的方法论和技术路径。</p>
+    </div>
+    <div class="card">
+      <h3>研究目标</h3>
+      <p>构建融合物理机制与深度学习的CO₂-Net模型，实现对全球CO₂浓度高精度时空重建。</p>
+      <p>在CarbonTracker、CMIP6等权威数据集及真实观测站点上验证模型性能，突破现有基准方法。</p>
+      <p>支撑区域碳汇评估与生态风险预警，推动成果在气候政策与环境管理中的实际应用。</p>
+    </div>
+    <div class="card">
+      <h3>研究意义</h3>
+      <p>填补海洋等观测稀疏区的CO₂数据空白，为全球碳循环研究和碳收支核算提供更高质量数据基础。</p>
+      <p>提升重建效率，实现比较准确的全球推理，尽量满足动态监测与实时决策的时效性需求。</p>
+      <p>为国家“双碳”目标评估、国际气候谈判及生态保护政策制定提供科学依据与技术支撑。</p>
+    </div>
+  </div>
+</section>
+
+<section id="content">
+  <h2>
+    <span class="toggle-btn" onclick="toggleModel()">🔄</span>
+    实验模型
+  </h2>
+  <div class="model-content" id="traditional">
+    <h3>传统模型</h3>
+    <p><strong>数据局限性：</strong>传统反演模型（如贝叶斯反演、卡尔曼滤波）比较依赖碳通量、碳排放等先验数据，而这些数据获取成本高、覆盖范围小、质量参差不齐。<br>
+    <strong>计算效率低下：</strong>随着数据规模和分辨率的提升，数值模拟和反演过程的计算量急剧增大，计算效率问题愈发突出，难以扩展至全球高分辨率场景。<br>
+    <strong>物理参数经验性偏差：</strong>模型中的物理参数往往带有经验性，可能导致重建结果存在系统性偏差。</p>
+  </div>
+  <div class="model-content" id="new-model" style="display: none;">
+    <h3>CO₂-Net模型✨</h3>
+    <p><strong>融合物理机制：</strong>通过时空模型分解分别处理空间分布（特解）和时间演化（通解），增强了模型的物理可解释性。<br>
+    <strong>动态周期性建模：</strong>利用经纬向风速调制周期信号，比较准确地刻画了风场等动态因素对CO₂传输周期性的影响。<br>
+    <strong>高精度预测：</strong>两项评价标准RMSE和ACC结果都取得比其他模型更好的效果，模型性能更加突出。<br>
+    <strong>高效处理稀疏数据：</strong>通过自监督学习，利用时间特征反推风场，有效利用了物理变量间的关联性，降低了对密集标签数据的依赖。</p>
+  </div>
+</section>
+
+<section id="results">
+  <h2>实验成果</h2>
+  <div class="result-card">
+    <p><strong>CO₂-Net模型在CarbonTracker和CMIP6数据集上均优于现有方法</strong></p>
+    <p>模型在独立真实观测站点上验证有效，并且在中国近海等区域重建结果准确性较高。</p>
+    <p>消融实验验证，风场重建损失函数对性能提升贡献显著。</p>
+  </div>
+</section>
+
+<section id="generate-image">
+  <h2>生成图像</h2>
+  <div class="upload-area" onclick="document.getElementById('fileInput').click()" id="uploadDisplay">
+    <p>点击选择文件上传</p>
+  </div>
+  <input type="file" id="fileInput" style="display: none;" accept=".csv,.nc,.npz,.txt,.json" onchange="showFileName(this)" />
+  <button class="btn-generate" onclick="openModal()">生成图像</button>
+</section>
+
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeModal()">&times;</span>
+    <h3>CO₂ 浓度重建图</h3>
+    <img src="https://via.placeholder.com/800x400?text=CO₂+浓度重建图" alt="CO₂浓度图" class="result-img">
+    <button class="return-btn" onclick="closeModal()">← 返回</button>
+  </div>
+</div>
+
+<footer>
+  © 2026 灵犀智碳团队. 保留所有权利.
+</footer>
+
+<script>
+  // 显示文件名
+  function showFileName(input) {
+    const display = document.getElementById('uploadDisplay');
+    if (input.files.length > 0) {
+      const name = input.files[0].name;
+      display.innerHTML = `<p>已选择文件：<strong>${name}</strong></p>`;
+    } else {
+      display.innerHTML = '<p>点击选择文件上传（支持 .csv, .nc, .npz 等任意格式）</p>';
+    }
+  }
+
+  // 切换导航菜单（小屏）
+  function toggleMenu() {
+    const nav = document.getElementById('mainNav');
+    nav.classList.toggle('show');
+  }
+
+  // 导航高亮
+  const sections = document.querySelectorAll('section, main');
+  const navLinks = document.querySelectorAll('nav a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.clientHeight;
+      if (pageYOffset >= sectionTop - 100 && pageYOffset < sectionTop + sectionHeight - 100) {
+        current = section.getAttribute('id');
+      }
+    });
+
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${current}`) {
+        link.classList.add('active');
+      }
+    });
+  });
+
+  // 切换实验模型
+  function toggleModel() {
+    const traditional = document.getElementById('traditional');
+    const newModel = document.getElementById('new-model');
+    
+    if (traditional.style.display === 'none') {
+      traditional.style.display = 'block';
+      newModel.style.display = 'none';
+    } else {
+      traditional.style.display = 'none';
+      newModel.style.display = 'block';
+    }
+  }
+
+  // 打开模态框
+  function openModal() {
+    document.getElementById('modal').style.display = 'flex';
+  }
+
+  // 关闭模态框 & 菜单
+  function closeModal() {
+    document.getElementById('modal').style.display = 'none';
+  }
+
+  // 点击导航链接后关闭菜单（小屏）
+  document.querySelectorAll('nav a').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('mainNav').classList.remove('show');
+    });
+  });
+
+  // 初始化高亮
+  window.dispatchEvent(new Event('scroll'));
+</script>
+
+</body>
+</html>
