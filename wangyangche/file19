@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基于深度学习的二氧化碳全球浓度重建 - 灵犀智碳小队</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* 导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c786c;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: #2c786c;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            transition: color 0.3s;
+            font-size: 1.05rem;
+        }
+        
+        .nav-links a:hover {
+            color: #3eae9e;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #2c786c;
+        }
+        
+        /* 封面部分 - 修改此处添加地球背景 */
+        .cover {
+            height: 100vh;
+            background: linear-gradient(135deg, #1a3c34 0%, #2c786c 50%, #4ca48f 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cover::before {
+            content: '';
+            position: absolute;
+            width: 300%;
+            height: 300%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.05)" /></svg>');
+            animation: float 60s linear infinite;
+            z-index: 0;
+        }
+        
+        /* 添加地球背景样式 - 简化版本 */
+        .earth-background {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60vmin;
+            height: 60vmin;
+            z-index: 1;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        
+        .earth-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 
+                0 0 0 2px rgba(255, 255, 255, 0.2),
+                inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+        }
+        
+        .earth-latitude {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .earth-longitude {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+        
+        .earth-co2 {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 4vmin;
+            font-weight: bold;
+            letter-spacing: 0.2em;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        
+        .earth-co2 span {
+            font-size: 2vmin;
+            vertical-align: super;
+            margin-left: -0.5em;
+        }
+        
+        /* 新增：翻滚浪花特效容器 */
+        .rolling-waves {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            z-index: 2;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .rolling-waves-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .rolling-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 80px;
+            background: linear-gradient(to right, 
+                rgba(255, 255, 255, 0) 0%, 
+                rgba(255, 255, 255, 0.3) 25%, 
+                rgba(255, 255, 255, 0.6) 50%, 
+                rgba(255, 255, 255, 0.3) 75%, 
+                rgba(255, 255, 255, 0) 100%);
+            border-radius: 50% 50% 0 0;
+            animation: rollWave 8s linear infinite;
+        }
+        
+        .rolling-wave:nth-child(1) {
+            height: 70px;
+            animation-delay: 0s;
+            opacity: 0.9;
+            animation-duration: 6s;
+        }
+        
+        .rolling-wave:nth-child(2) {
+            animation-delay: 1s;
+            opacity: 0.7;
+            height: 60px;
+            bottom: 10px;
+            animation-duration: 7s;
+        }
+        
+        .rolling-wave:nth-child(3) {
+            animation-delay: 2s;
+            opacity: 0.5;
+            height: 50px;
+            bottom: 20px;
+            animation-duration: 8s;
+        }
+        
+        @keyframes rollWave {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+        
+        /* 海面漂浮CO2动画 - 增强版 */
+        .ocean-co2-animation {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            z-index: 1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .wave-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+        }
+        
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 150px;
+            background: linear-gradient(to right, 
+                rgba(26, 60, 52, 0.15) 0%, 
+                rgba(44, 120, 108, 0.35) 25%, 
+                rgba(76, 164, 143, 0.6) 50%,
+                rgba(44, 120, 108, 0.35) 75%, 
+                rgba(26, 60, 52, 0.15) 100%);
+            border-radius: 50% 50% 0 0;
+            animation: waveMove 18s linear infinite;
+        }
+        
+        .wave:nth-child(1) {
+            height: 150px;
+            animation-delay: 0s;
+            opacity: 0.9;
+            background: linear-gradient(to right, 
+                rgba(26, 60, 52, 0.2) 0%, 
+                rgba(44, 120, 108, 0.45) 25%, 
+                rgba(76, 164, 143, 0.7) 50%, 
+                rgba(44, 120, 108, 0.45) 75%, 
+                rgba(26, 60, 52, 0.2) 100%);
+        }
+        
+        .wave:nth-child(2) {
+            animation-delay: 0.5s;
+            opacity: 0.7;
+            height: 130px;
+            bottom: 15px;
+            animation-duration: 16s;
+            background: linear-gradient(to right, 
+                rgba(26, 60, 52, 0.15) 0%, 
+                rgba(44, 120, 108, 0.35) 25%, 
+                rgba(76, 164, 143, 0.55) 50%, 
+                rgba(44, 120, 108, 0.35) 75%, 
+                rgba(26, 60, 52, 0.15) 100%);
+        }
+        
+        .wave:nth-child(3) {
+            animation-delay: 1s;
+            opacity: 0.5;
+            height: 110px;
+            bottom: 30px;
+            animation-duration: 14s;
+            background: linear-gradient(to right, 
+                rgba(26, 60, 52, 0.1) 0%, 
+                rgba(44, 120, 108, 0.25) 25%, 
+                rgba(76, 164, 143, 0.4) 50%, 
+                rgba(44, 120, 108, 0.25) 75%, 
+                rgba(26, 60, 52, 0.1) 100%);
+        }
+        
+        /* 海浪泡沫效果 */
+        .wave-foam {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 30px;
+            background: linear-gradient(to right, 
+                rgba(255, 255, 255, 0) 0%, 
+                rgba(255, 255, 255, 0.3) 25%, 
+                rgba(255, 255, 255, 0.6) 50%, 
+                rgba(255, 255, 255, 0.3) 75%, 
+                rgba(255, 255, 255, 0) 100%);
+            animation: waveMove 12s linear infinite;
+            animation-delay: 0.2s;
+        }
+        
+        .wave-foam-2 {
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 200%;
+            height: 20px;
+            background: linear-gradient(to right, 
+                rgba(255, 255, 255, 0) 0%, 
+                rgba(255, 255, 255, 0.2) 25%, 
+                rgba(255, 255, 255, 0.4) 50%, 
+                rgba(255, 255, 255, 0.2) 75%, 
+                rgba(255, 255, 255, 0) 100%);
+            animation: waveMove 10s linear infinite;
+            animation-delay: 0.5s;
+        }
+        
+        @keyframes waveMove {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+        
+        .co2-bubbles {
+            position: absolute;
+            bottom: 80px;
+            left: 0;
+            width: 100%;
+            height: 250px;
+        }
+        
+        .co2-bubble {
+            position: absolute;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), rgba(44, 120, 108, 0.6));
+            border-radius: 50%;
+            animation: bubbleFloat 12s infinite ease-in;
+            box-shadow: 
+                0 0 15px rgba(255, 255, 255, 0.3),
+                inset 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+        
+        .co2-bubble::before {
+            content: 'CO₂';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+        }
+        
+        @keyframes bubbleFloat {
+            0% {
+                transform: translateY(0) scale(0.4) rotate(0deg);
+                opacity: 0;
+                filter: blur(0px);
+            }
+            10% {
+                opacity: 0.9;
+                filter: blur(0px);
+            }
+            50% {
+                transform: translateY(-150px) scale(0.9) rotate(180deg);
+                opacity: 0.8;
+                filter: blur(0.5px);
+            }
+            90% {
+                opacity: 0.7;
+                filter: blur(1px);
+            }
+            100% {
+                transform: translateY(-250px) scale(1.3) rotate(360deg);
+                opacity: 0;
+                filter: blur(2px);
+            }
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-100px, -100px) rotate(360deg); }
+        }
+        
+        @keyframes gentleRotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .cover-content {
+            position: relative;
+            z-index: 3;
+            max-width: 900px;
+        }
+        
+        .cover h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .cover p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .cover-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            z-index: 3;
+        }
+        
+        .team-name {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px 25px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 20px;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 3;
+        }
+        
+        .scroll-down {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1.5rem;
+            animation: bounce 2s infinite;
+            z-index: 3;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+            40% { transform: translateY(-10px) translateX(-50%); }
+            60% { transform: translateY(-5px) translateX(-50%); }
+        }
+        
+        /* 主要内容部分 */
+        .content-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 20px;
+            position: relative;
+        }
+        
+        /* 实施过程部分气泡效果 - 修复：平滑持续 */
+        .process-bubbles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .process-bubble {
+            position: absolute;
+            bottom: -100px;
+            background: radial-gradient(circle at 30% 30%, 
+                rgba(44, 120, 108, 0.2), 
+                rgba(26, 60, 52, 0.4));
+            border-radius: 50%;
+            animation: processBubbleFloat 30s infinite ease-in-out;
+            box-shadow: 
+                0 0 25px rgba(44, 120, 108, 0.4),
+                inset 0 0 20px rgba(255, 255, 255, 0.3);
+            opacity: 0;
+        }
+        
+        .process-bubble::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 35%;
+            height: 35%;
+            background: rgba(44, 120, 108, 0.6);
+            border-radius: 50%;
+        }
+        
+        .process-bubble::after {
+            content: 'CO₂';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            font-weight: bold;
+            color: rgba(44, 120, 108, 0.9);
+        }
+        
+        @keyframes processBubbleFloat {
+            0% {
+                transform: translateY(0) scale(0.3);
+                opacity: 0;
+                filter: brightness(1) blur(0px);
+            }
+            5% {
+                opacity: 0.5;
+                filter: brightness(1) blur(0px);
+            }
+            50% {
+                transform: translateY(-50vh) scale(0.8);
+                opacity: 0.8;
+                filter: brightness(0.8) blur(0.5px);
+            }
+            95% {
+                opacity: 0.6;
+                filter: brightness(0.6) blur(1px);
+            }
+            100% {
+                transform: translateY(-100vh) scale(1.5);
+                opacity: 0;
+                filter: brightness(0.3) blur(2px);
+            }
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: #2c786c;
+            display: inline-block;
+            padding-bottom: 15px;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 4px;
+            background-color: #2c786c;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            z-index: 1;
+            position: relative;
+        }
+        
+        /* 项目背景部分 */
+        .background-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .background-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .background-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            color: #2c786c;
+            margin-bottom: 20px;
+        }
+        
+        .background-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #2c786c;
+        }
+        
+        /* 过程部分 */
+        .process-timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            z-index: 1;
+        }
+        
+        .process-timeline::before {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background-color: #2c786c;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+        
+        .timeline-item {
+            margin-bottom: 40px;
+            position: relative;
+            width: 50%;
+            padding: 0 40px;
+            z-index: 1;
+        }
+        
+        .timeline-item:nth-child(odd) {
+            left: 0;
+        }
+        
+        .timeline-item:nth-child(even) {
+            left: 50%;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border: 4px solid #2c786c;
+            border-radius: 50%;
+            top: 15px;
+            z-index: 2;
+        }
+        
+        .timeline-item:nth-child(odd)::after {
+            right: -12px;
+        }
+        
+        .timeline-item:nth-child(even)::after {
+            left: -12px;
+        }
+        
+        .timeline-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .timeline-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #2c786c;
+        }
+        
+        .timeline-date {
+            display: inline-block;
+            background-color: #2c786c;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        /* 结果部分 */
+        .results-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .result-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-icon {
+            height: 200px;
+            background-color: #e9f5f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #2c786c;
+            font-size: 4rem;
+        }
+        
+        /* 亚欧大陆图标自定义样式 */
+        .eurasia-icon {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+        
+        .eurasia-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: #2c786c;
+        }
+        
+        .result-info {
+            padding: 25px;
+        }
+        
+        .result-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #2c786c;
+        }
+        
+        /* 表格样式 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-table th {
+            background-color: #2c786c;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f5fbf9;
+        }
+        
+        /* 可视化交互区域 */
+        .visual-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .visual-title {
+            font-size: 1.8rem;
+            color: #2c786c;
+            margin-bottom: 20px;
+            border-left: 4px solid #2c786c;
+            padding-left: 15px;
+        }
+        
+        .func-desc {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            background-color: #f5fbf9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .func-desc span {
+            color: #2c786c;
+            font-weight: bold;
+        }
+        
+        .operate-area {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .upload-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .upload-btn {
+            position: relative;
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #2c786c;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 500;
+        }
+        
+        .upload-btn:hover {
+            background-color: #3eae9e;
+        }
+        
+        .upload-btn input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .upload-tip {
+            font-size: 0.9rem;
+            color: #777;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+        
+        .visual-select {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            color: #333;
+            min-width: 200px;
+            outline: none;
+            transition: border-color 0.3s;
+            background-color: white;
+        }
+        
+        .visual-select:focus {
+            border-color: #2c786c;
+        }
+        
+        .control-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 10px 18px;
+            background-color: #f5fbf9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .control-btn:hover {
+            background-color: #2c786c;
+            color: white;
+            border-color: #2c786c;
+        }
+        
+        .result-area {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            background-color: #f9f9f9;
+        }
+        
+        .visualization-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s;
+        }
+        
+        .result-tip {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.1rem;
+            color: #999;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .chart-area {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .chart-item {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        
+        .chart-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .chart-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        
+        .chart-title {
+            font-size: 1.3rem;
+            color: #2c786c;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .chart-caption {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.4;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        /* 底部 */
+        footer {
+            background-color: #1a3c34;
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .footer-info {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-section h4 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #4ca48f;
+        }
+        
+        .copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .cover h1 {
+                font-size: 2.8rem;
+            }
+            
+            .cover p {
+                font-size: 1.3rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .mobile-menu {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: white;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+                display: none;
+            }
+            
+            .mobile-menu.active {
+                display: block;
+            }
+            
+            .mobile-menu ul {
+                list-style: none;
+            }
+            
+            .mobile-menu li {
+                border-bottom: 1px solid #eee;
+            }
+            
+            .mobile-menu a {
+                display: block;
+                padding: 15px 20px;
+                text-decoration: none;
+                color: #333;
+                font-weight: 500;
+            }
+            
+            .mobile-menu a:hover {
+                background-color: #f8f9fa;
+                color: #2c786c;
+            }
+            
+            .result-area {
+                height: 400px;
+            }
+            
+            /* 响应式调整地球大小 */
+            .earth-background {
+                width: 70vmin;
+                height: 70vmin;
+                opacity: 0.35;
+            }
+            
+            /* 响应式调整海面动画 */
+            .ocean-co2-animation {
+                height: 250px;
+            }
+            
+            .co2-bubbles {
+                height: 180px;
+            }
+            
+            /* 响应式调整翻滚浪花 */
+            .rolling-waves {
+                height: 120px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .cover h1 {
+                font-size: 2.2rem;
+            }
+            
+            .cover p {
+                font-size: 1.1rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .process-timeline::before {
+                left: 30px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                left: 0 !important;
+                padding-left: 70px;
+                padding-right: 20px;
+            }
+            
+            .timeline-item::after {
+                left: 20px !important;
+            }
+            
+            .operate-area {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .visual-select {
+                width: 100%;
+            }
+            
+            .result-area {
+                height: 350px;
+            }
+            
+            /* 响应式调整地球大小 */
+            .earth-background {
+                width: 80vmin;
+                height: 80vmin;
+                opacity: 0.3;
+            }
+            
+            .earth-co2 {
+                font-size: 5vmin;
+            }
+            
+            /* 响应式调整海面动画 */
+            .ocean-co2-animation {
+                height: 220px;
+            }
+            
+            .wave-container {
+                height: 150px;
+            }
+            
+            .co2-bubbles {
+                height: 150px;
+            }
+            
+            /* 响应式调整翻滚浪花 */
+            .rolling-waves {
+                height: 100px;
+            }
+            
+            .rolling-wave {
+                height: 60px;
+            }
+            
+            .rolling-wave:nth-child(1) {
+                height: 50px;
+            }
+            
+            .rolling-wave:nth-child(2) {
+                height: 45px;
+            }
+            
+            .rolling-wave:nth-child(3) {
+                height: 40px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .cover h1 {
+                font-size: 1.8rem;
+            }
+            
+            .cover p {
+                font-size: 1rem;
+            }
+            
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+            
+            .background-content, .results-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-area {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-area {
+                height: 300px;
+            }
+            
+            /* 响应式调整地球大小 */
+            .earth-background {
+                width: 90vmin;
+                height: 90vmin;
+                opacity: 0.25;
+            }
+            
+            .earth-co2 {
+                font-size: 6vmin;
+            }
+            
+            /* 响应式调整海面动画 */
+            .ocean-co2-animation {
+                height: 180px;
+            }
+            
+            .wave-container {
+                height: 120px;
+            }
+            
+            .co2-bubbles {
+                height: 120px;
+            }
+            
+            /* 响应式调整翻滚浪花 */
+            .rolling-waves {
+                height: 80px;
+            }
+            
+            .rolling-wave {
+                height: 50px;
+            }
+            
+            .rolling-wave:nth-child(1) {
+                height: 40px;
+            }
+            
+            .rolling-wave:nth-child(2) {
+                height: 35px;
+            }
+            
+            .rolling-wave:nth-child(3) {
+                height: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-leaf"></i>
+                CO₂重建
+            </div>
+            <ul class="nav-links">
+                <li><a href="#cover">首页</a></li>
+                <li><a href="#background">项目背景</a></li>
+                <li><a href="#process">实施过程</a></li>
+                <li><a href="#results">实验结果</a></li>
+                <li><a href="#visualization">可视化交互</a></li>
+            </ul>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 封面部分 -->
+    <section id="cover" class="cover">
+        <!-- 添加地球背景 -->
+        <div class="earth-background">
+            <div class="earth-circle"></div>
+            <div class="earth-latitude"></div>
+            <div class="earth-longitude"></div>
+            <div class="earth-co2">CO<span>₂</span></div>
+        </div>
+        
+        <!-- 新增：翻滚浪花特效 -->
+        <div class="rolling-waves">
+            <div class="rolling-waves-container">
+                <div class="rolling-wave"></div>
+                <div class="rolling-wave"></div>
+                <div class="rolling-wave"></div>
+            </div>
+        </div>
+        
+        <!-- 海面漂浮CO2动画 - 增强版 -->
+        <div class="ocean-co2-animation">
+            <div class="wave-container">
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave-foam"></div>
+                <div class="wave-foam-2"></div>
+            </div>
+            <div class="co2-bubbles" id="co2Bubbles">
+                <!-- CO2气泡将通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <div class="cover-content">
+            <h1>基于深度学习的二氧化碳全球浓度重建</h1>
+            <p> </p>
+            <div class="cover-subtitle">
+                本项目提出CO₂-Net深度学习模型，利用有限的观测数据结合气候变量，实现高质量的全球二氧化碳浓度重建，填补海洋等区域观测数据空缺，为研究碳循环过程提供数据支撑。
+            </div>
+            <div class="team-name">
+                <i class="fas fa-users"></i> 灵犀智碳小队
+            </div>
+        </div>
+        <div class="scroll-down">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- 项目背景部分 -->
+    <section id="background" class="content-section">
+        <div class="section-title">
+            <h2>项目背景</h2>
+        </div>
+        <p class="section-subtitle">二氧化碳是对人类生活影响最大的温室气体之一，其浓度逐年增加是全球气候变化的重要原因。准确监测CO₂浓度的时空分布对应对气候变化至关重要。</p>
+        
+        <div class="background-content">
+            <div class="background-card">
+                <div class="card-icon">
+                    <i class="fas fa-globe-americas"></i>
+                </div>
+                <h3>研究背景与意义</h3>
+                <p>大气CO₂浓度持续增加，导致全球温度升高、极端天气事件增加、海平面上升等问题。为应对全球气候变化，各国制定了一系列温室气体减排政策和目标，如中国的"碳达峰、碳中和"目标和《巴黎协定》。</p>
+                <p>传统CO₂重建方法基于反演模型，依赖先验数据且计算效率低。深度学习方法能提高CO₂浓度重建的准确性和效率，克服传统方法在处理大规模、复杂时空数据时的局限性。</p>
+            </div>
+            
+            <div class="background-card">
+                <div class="card-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>现有研究基础</h3>
+                <p>传统反演模型如贝叶斯反演、卡尔曼滤波等，依赖碳通量等先验数据，计算复杂度高，难以扩展至高分辨率场景。</p>
+                <p>近年来，深度学习方法为解决传统模型局限提供了新思路，但存在物理可解释性弱、数据依赖性强、长时序建模能力不足等问题。</p>
+                <p>本研究结合两类方法优势，在深度学习框架中嵌入物理规律，设计动态周期建模机制，提升稀疏数据利用能力。</p>
+            </div>
+            
+            <div class="background-card">
+                <div class="card-icon">
+                    <i class="fas fa-water"></i>
+                </div>
+                <h3>应用场景与价值</h3>
+                <p><strong>海洋区域CO₂浓度精细化重建：</strong>填补海洋观测数据空白，捕捉洋流运动导致的CO₂浓度时空差异。</p>
+                <p><strong>海洋酸化风险评估与预警：</strong>基于重建的CO₂浓度数据反推pH值变化趋势，精准定位酸化高风险区域。</p>
+                <p><strong>全球碳循环中海洋碳汇能力量化：</strong>为全球碳预算核算提供关键参数，支撑气候变化政策科学制定。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 实施过程部分 -->
+    <section id="process" class="content-section" style="background-color: #f5fbf9;">
+        <!-- 添加过程部分气泡效果 - 平滑持续 -->
+        <div class="process-bubbles" id="processBubbles"></div>
+        
+        <div class="section-title">
+            <h2>实施过程</h2>
+        </div>
+        <p class="section-subtitle">本项目采用创新的CO₂-Net深度学习模型，结合时空模型分解、基于风场的时空周期性嵌入和风场重建损失函数，解决CO₂重建中的关键挑战。</p>
+        
+        <div class="process-timeline">
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-date">模型设计</div>
+                    <h3>CO₂-Net模型架构</h3>
+                    <p>提出融合物理机制的深度学习模型架构，通过三级组件解决二氧化碳浓度重建的核心挑战：</p>
+                    <ul style="padding-left: 20px; margin-top: 10px;">
+                        <li><strong>时空模型分解模块：</strong>基于对流-扩散方程的物理逻辑，将CO₂浓度场解耦为空间分布特征与时间演化特征</li>
+                        <li><strong>基于风场的时空周期性嵌入：</strong>通过经纬向风速调制三角函数编码，量化季风、信风等周期性气象现象对CO₂传输的影响</li>
+                        <li><strong>风场重建损失函数：</strong>通过监督学习机制，利用时间模型输出的时序特征反推风场数据，提升模型泛化能力</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-date">数据集</div>
+                    <h3>多源数据融合</h3>
+                    <p>使用三个具有代表性的CO₂数据集进行实验：</p>
+                    <ul style="padding-left: 20px; margin-top: 10px;">
+                        <li><strong>CarbonTracker：</strong>2000-2020年，3小时分辨率，2°×3°空间分辨率</li>
+                        <li><strong>CMIP6：</strong>1850-2014年，月均分辨率，2.8°×2.8°空间分辨率</li>
+                        <li><strong>GLOBALVIEWplus：</strong>1957-2024年，96个观测站点数据，用于模型验证</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-date">技术细节</div>
+                    <h3>关键技术组件</h3>
+                    <p><strong>对流-扩散方程建模：</strong>描述在风场驱动下，CO₂浓度在大气中的对流和扩散过程</p>
+                    <p><strong>时空模型分解：</strong>将模型分为空间模型和时间模型，分别处理时不变特解和时变通解</p>
+                    <p><strong>逐层时空连接模块：</strong>基于时空交叉注意力机制，加强空间模型和时间模型之间的信息交换</p>
+                    <p><strong>半监督学习：</strong>结合有监督损失函数和风场重建损失函数，提升模型在稀疏数据下的表现</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 实验结果部分 -->
+    <section id="results" class="content-section">
+        <div class="section-title">
+            <h2>实验结果</h2>
+        </div>
+        <p class="section-subtitle">CO₂-Net模型在CarbonTracker和CMIP6数据集上进行了全面评估，与多个基准模型对比，取得了显著性能提升。</p>
+        
+        <div class="results-content">
+            <div class="result-card">
+                <div class="result-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <div class="result-info">
+                    <h3>全球重建结果</h3>
+                    <p>在CarbonTracker数据集上，CO₂-Net取得了3.36μmol/mol的RMSE值，相较于最佳基准模型CycleGAN减少约28.5%。</p>
+                    <p>在CMIP6数据集上，CO₂-Net取得了5.31μmol/mol的RMSE值，相较于最佳基准模型ViT减少约70.8%。</p>
+                </div>
+            </div>
+            
+            <div class="result-card">
+                <div class="result-icon">
+                    <i class="fas fa-tint"></i>
+                </div>
+                <div class="result-info">
+                    <h3>海洋区域重建</h3>
+                    <p>在CarbonTracker数据集上，海洋区域RMSE为1.09μmol/mol，ACC为0.94，显著优于其他基准模型。</p>
+                    <p>模型尤其能填补海洋观测空白区的数据缺口，为海洋碳循环研究提供可靠的基础数据。</p>
+                </div>
+            </div>
+            
+            <div class="result-card">
+                <div class="result-icon">
+                    <!-- 大陆形状图标 -->
+                    <div class="eurasia-icon">
+                        <svg viewBox="0 0 100 100">
+                            <!-- 亚欧大陆简化轮廓 -->
+                            <path d="M20,30 Q25,20 35,25 Q45,30 50,25 Q55,20 60,25 Q65,30 70,25 Q75,20 80,30 Q85,40 75,50 Q70,60 65,65 Q60,70 55,75 Q50,80 45,75 Q40,70 35,65 Q30,60 25,50 Q20,40 20,30 Z" />
+                            <!-- 欧洲部分 -->
+                            <path d="M40,35 Q45,30 50,35 Q55,40 50,45 Q45,50 40,45 Q35,40 40,35 Z" />
+                            <!-- 亚洲部分 -->
+                            <path d="M55,40 Q60,35 65,40 Q70,45 65,50 Q60,55 55,50 Q50,45 55,40 Z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="result-info">
+                    <h3>亚欧大陆重建</h3>
+                    <p>在CarbonTracker数据集上，亚欧大陆区域RMSE为5.39μmol/mol，ACC为0.85。</p>
+                    <p>在CMIP6数据集上，亚欧大陆区域RMSE为5.36μmol/mol，ACC为0.97。</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 删除了性能对比分析图 -->
+    </section>
+
+    <!-- 可视化交互部分 - 融合副网页功能 -->
+    <section id="visualization" class="content-section" style="background-color: #f5fbf9;">
+        <div class="section-title">
+            <h2>可视化交互</h2>
+        </div>
+        <p class="section-subtitle">CO₂-Net模型在全球CO₂浓度重建中的可视化结果，您可以通过上传数据集和交互操作查看重建效果。</p>
+        
+        <div class="visual-container">
+            <h3 class="visual-title">CO₂浓度重建 - 可视化交互区</h3>
+            
+            <div class="func-desc">
+                操作流程：<span>上传数据集文件</span> → <span>选择可视化类型</span> → <span>查看重建结果</span>
+                <br>
+                仅支持全球CO₂浓度数据可视化展示，可切换年份、缩放查看细节
+            </div>
+            
+            <div class="operate-area">
+                <div class="upload-wrap">
+                    <label class="upload-btn">
+                        上传数据集
+                        <input type="file" id="fileUpload" accept=".csv,.xlsx,.xls">
+                    </label>
+                    <div class="upload-tip">支持格式：CSV / Excel | 示例数据集：CarbonTracker/CMIP6<br>
+                        文件名规则：含「全球」或「global」关键词更易识别为全球CO₂数据集
+                    </div>
+                </div>
+                
+                <select class="visual-select" id="visualType">
+                    <option value="">-- 请选择可视化类型 --</option>
+                    <option value="global">全球CO₂浓度热力图</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <button class="control-btn" id="zoomIn">放大</button>
+                <button class="control-btn" id="zoomOut">缩小</button>
+                <button class="control-btn" id="switch2000">切换2000年</button>
+                <button class="control-btn" id="switch2020">切换2020年</button>
+                <button class="control-btn" id="resetView">重置视图</button>
+            </div>
+            
+            <div class="result-area" id="resultArea">
+                <div class="result-tip">请上传数据集并选择可视化类型查看结果</div>
+            </div>
+            
+            <div class="chart-area">
+                <!-- 左侧图表 -->
+                <div class="chart-item">
+                    <div class="chart-title">重建效果对比表</div>
+                    <img src="对比表.png" alt="CO₂-Net与基准模型重建结果对比">
+                    <div class="chart-caption">CO₂-Net和其他基准模型的在全球范围、海洋区域和亚欧大陆上的CO₂重建结果对比</div>
+                </div>
+                <!-- 右侧图表 -->
+                <div class="chart-item">
+                    <div class="chart-title">短期事件-CO₂变化曲线图</div>
+                    <img src="短期事件图.png" alt="CO₂-Net区域短期CO₂浓度变化趋势">
+                    <div class="chart-caption">CO₂-Net重建在亚马逊雨林、加利福尼亚洲和西伯利亚森林地区内短期CO₂浓度变化趋势的结果</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 底部 -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fas fa-leaf"></i> CO₂重建项目
+            </div>
+            
+            <div class="footer-info">
+                <div class="footer-section">
+                    <h4>项目信息</h4>
+                    <p>xx赛</p>
+                    <p>xx项目</p>
+                    <p>版本</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>团队信息</h4>
+                    <p>灵犀智碳小队</p>
+                    <p>指导老师：</p>
+                    <p>队员：</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>联系方式</h4>
+                    <p>Email: </p>
+                    <p>地址：</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy;  灵犀智碳小队 - 基于深度学习的二氧化碳全球浓度重建项目. 保留所有权利。</p>
+                <p>本网站仅为项目展示用途，数据来源于CarbonTracker、CMIP6和GLOBALVIEWplus数据集。</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单功能
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            const mobileMenu = document.querySelector('.mobile-menu');
+            if (mobileMenu) {
+                mobileMenu.classList.toggle('active');
+            } else {
+                // 创建移动端菜单
+                const navLinks = document.querySelector('.nav-links');
+                const mobileMenu = document.createElement('div');
+                mobileMenu.className = 'mobile-menu';
+                mobileMenu.innerHTML = navLinks.outerHTML;
+                document.querySelector('.nav-container').appendChild(mobileMenu);
+                mobileMenu.classList.add('active');
+                
+                // 添加点击事件
+                mobileMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.remove('active');
+                    });
+                });
+            }
+        });
+        
+        // 平滑滚动到锚点
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 70,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // 可视化交互逻辑
+        const fileUpload = document.getElementById('fileUpload');
+        const resultArea = document.getElementById('resultArea');
+        const visualType = document.getElementById('visualType');
+        let currentImg = null; 
+        let scale = 1; 
+        let uploadedFileName = "";
+        
+        // 模拟的图片数据
+        const imgMap = {
+            global: {
+                2000: "全球热力图2000.png",
+                2020: "全球热力图2020.png",
+                default: "全球热力图2000.png"
+            }
+        };
+
+        function getTypeByFileName(fileName) {
+            fileName = fileName.toLowerCase();
+            if (fileName.includes("全球") || fileName.includes("global")) {
+                return "global";
+            } else if (fileName.includes("区域") || fileName.includes("regional")) {
+                return "regional";
+            } else {
+                return "";
+            }
+        }
+
+        function renderImg(type = null, year = "default") {
+            if (!type || type === "") {
+                resultArea.innerHTML = '<div class="result-tip">请上传数据集并选择可视化类型查看结果</div>';
+                currentImg = null;
+                return;
+            }
+            
+            const finalType = type || getTypeByFileName(uploadedFileName) || visualType.value;
+            
+            // 根据类型选择图片
+            const imgSrc = imgMap[finalType] ? imgMap[finalType][year] : imgMap.global.default;
+            
+            resultArea.innerHTML = '';
+            currentImg = document.createElement('img');
+            currentImg.src = imgSrc;
+            currentImg.className = 'visualization-img';
+            currentImg.style.transform = `scale(${scale})`;
+            currentImg.alt = `${finalType === "global" ? "全球" : "区域"}CO₂浓度热力图 ${year === "2000" ? "2000年" : "2020年"}`;
+            
+            currentImg.onerror = function() {
+                resultArea.innerHTML = '<div class="result-tip">图片加载失败，请检查网络连接</div>';
+                currentImg = null;
+            };
+            
+            resultArea.appendChild(currentImg);
+            visualType.value = finalType;
+        }
+
+        fileUpload.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                uploadedFileName = file.name;
+                const matchType = getTypeByFileName(file.name);
+                
+                if (matchType === "global" || matchType === "regional") {
+                    alert(`文件 "${file.name}" 上传成功！\n已识别为${matchType === "global" ? "全球" : "区域"}CO₂数据集`);
+                    visualType.value = matchType;
+                    renderImg(matchType);
+                } else {
+                    alert(`文件 "${file.name}" 上传成功！\n自动识别为全球CO₂数据集进行可视化`);
+                    visualType.value = "global";
+                    renderImg("global");
+                }
+            }
+        });
+
+        visualType.addEventListener('change', function() {
+            const selectedType = this.value;
+            if (selectedType === "") {
+                renderImg("");
+                return;
+            }
+            
+            if (uploadedFileName) {
+                renderImg(selectedType);
+            } else {
+                alert('请先上传数据集！');
+                this.value = "";
+            }
+        });
+
+        document.getElementById('zoomIn').addEventListener('click', function() {
+            if (!currentImg) return alert('请先上传数据集并选择可视化类型查看图片！');
+            scale += 0.1;
+            currentImg.style.transform = `scale(${scale})`;
+        });
+
+        document.getElementById('zoomOut').addEventListener('click', function() {
+            if (!currentImg) return alert('请先上传数据集并选择可视化类型查看图片！');
+            if (scale <= 0.5) return;
+            scale -= 0.1;
+            currentImg.style.transform = `scale(${scale})`;
+        });
+
+        document.getElementById('switch2000').addEventListener('click', function() {
+            if (!uploadedFileName || !visualType.value) {
+                return alert('请先上传数据集并选择可视化类型！');
+            }
+            renderImg(visualType.value, 2000);
+        });
+
+        document.getElementById('switch2020').addEventListener('click', function() {
+            if (!uploadedFileName || !visualType.value) {
+                return alert('请先上传数据集并选择可视化类型！');
+            }
+            renderImg(visualType.value, 2020);
+        });
+
+        document.getElementById('resetView').addEventListener('click', function() {
+            if (!currentImg) return alert('请先上传数据集并选择可视化类型查看图片！');
+            scale = 1;
+            currentImg.style.transform = `scale(${scale})`;
+        });
+
+        // 海面漂浮CO2动画 - 动态生成气泡
+        function createCO2Bubbles() {
+            const bubblesContainer = document.getElementById('co2Bubbles');
+            if (!bubblesContainer) return;
+            
+            // 清空现有气泡
+            bubblesContainer.innerHTML = '';
+            
+            // 创建气泡
+            for (let i = 0; i < 25; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'co2-bubble';
+                
+                // 随机大小
+                const size = Math.random() * 30 + 15;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                
+                // 随机位置
+                const left = Math.random() * 100;
+                bubble.style.left = `${left}%`;
+                
+                // 随机动画延迟
+                const delay = Math.random() * 10;
+                bubble.style.animationDelay = `${delay}s`;
+                
+                // 随机动画持续时间
+                const duration = Math.random() * 6 + 10;
+                bubble.style.animationDuration = `${duration}s`;
+                
+                // 随机旋转动画
+                bubble.style.animation = `bubbleFloat ${duration}s ${delay}s infinite ease-in`;
+                
+                // 根据气泡大小调整字体
+                const fontSize = Math.max(10, size * 0.45);
+                bubble.style.fontSize = `${fontSize}px`;
+                
+                bubblesContainer.appendChild(bubble);
+            }
+        }
+        
+        // 实施过程部分气泡动画 - 改进：持续平稳产生和消失
+        let processBubbleInterval;
+        
+        function createProcessBubbles() {
+            const processBubblesContainer = document.getElementById('processBubbles');
+            if (!processBubblesContainer) return;
+            
+            // 创建左侧气泡
+            createProcessBubble(processBubblesContainer, 'left');
+            
+            // 创建右侧气泡
+            createProcessBubble(processBubblesContainer, 'right');
+        }
+        
+        function createProcessBubble(container, side) {
+            const bubble = document.createElement('div');
+            bubble.className = 'process-bubble';
+            
+            // 随机大小
+            const baseSize = Math.random() * 25 + 10;
+            bubble.style.width = `${baseSize}px`;
+            bubble.style.height = `${baseSize}px`;
+            
+            // 根据位置设置水平位置
+            let left;
+            if (side === 'left') {
+                left = Math.random() * 30 + 5; // 左侧5-35%
+            } else {
+                left = Math.random() * 30 + 65; // 右侧65-95%
+            }
+            bubble.style.left = `${left}%`;
+            
+            // 随机动画延迟
+            const delay = Math.random() * 5;
+            bubble.style.animationDelay = `${delay}s`;
+            
+            // 随机动画持续时间
+            const duration = Math.random() * 10 + 25; // 25-35秒
+            bubble.style.animationDuration = `${duration}s`;
+            
+            // 随机颜色深度
+            const colorDepth = Math.random() * 0.5 + 0.3;
+            bubble.style.background = `radial-gradient(circle at 30% 30%, 
+                rgba(44, 120, 108, ${colorDepth * 0.4}), 
+                rgba(26, 60, 52, ${colorDepth * 0.7}))`;
+            
+            // 气泡动画结束后移除
+            bubble.addEventListener('animationend', function() {
+                if (this.parentNode) {
+                    this.parentNode.removeChild(this);
+                }
+            });
+            
+            container.appendChild(bubble);
+        }
+        
+        // 初始化时显示一个示例图片
+        window.addEventListener('load', function() {
+            // 创建CO2气泡动画
+            createCO2Bubbles();
+            
+            // 初始化一些过程气泡
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    createProcessBubbles();
+                }, i * 500);
+            }
+            
+            // 每25秒重新生成首页气泡，保持动画持续
+            setInterval(createCO2Bubbles, 25000);
+            
+            // 持续生成过程气泡 - 每0.8秒生成一对气泡
+            processBubbleInterval = setInterval(createProcessBubbles, 800);
+        });
+
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
+                navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+            } else {
+                navbar.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+                navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+            }
+        });
+    </script>
+</body>
+</html>
