@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026年计算机设计大赛学习路线图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%);
+            border-radius: 2px;
+        }
+
+        .phase {
+            position: relative;
+            margin-bottom: 60px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .phase-content {
+            width: 45%;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .phase-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        }
+
+        .phase:nth-child(odd) .phase-content {
+            margin-right: 55%;
+        }
+
+        .phase:nth-child(even) .phase-content {
+            margin-left: 55%;
+        }
+
+        .phase-number {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
+            z-index: 10;
+        }
+
+        .phase-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .phase-desc {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .tasks {
+            list-style: none;
+        }
+
+        .tasks li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #555;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .tasks li:last-child {
+            border-bottom: none;
+        }
+
+        .tasks li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .links {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .links-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .link-item {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 15px;
+            background: #f0f4ff;
+            border-radius: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .link-item:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .final-phase {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            text-align: center;
+            padding: 40px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+
+        .final-phase h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .tips {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .tips h3 {
+            margin-bottom: 15px;
+        }
+
+        .tips ul {
+            list-style: none;
+            text-align: left;
+        }
+
+        .tips li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .tips li::before {
+            content: '★';
+            position: absolute;
+            left: 0;
+            color: #ffd700;
+        }
+
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 30px;
+            }
+
+            .phase-content {
+                width: calc(100% - 80px);
+                margin-left: 80px !important;
+                margin-right: 0 !important;
+            }
+
+            .phase-number {
+                left: 30px;
+                transform: translateX(-50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>2026年计算机设计大赛学习路线图</h1>
+            <p class="subtitle">项目名称：基于深度学习的二氧化碳全球浓度重建</p>
+        </div>
+
+        <div class="timeline">
+            <!-- 阶段一 -->
+            <div class="phase">
+                <div class="phase-number">1</div>
+                <div class="phase-content">
+                    <h2 class="phase-title">阶段一：Python基础</h2>
+                    <p class="phase-desc">学习Python编程语言的基础知识，为后续深度学习打下坚实基础。</p>
+                    <ul class="tasks">
+                        <li>掌握Python基础语法</li>
+                        <li>熟悉常用数据结构</li>
+                        <li>学习函数与面向对象编程</li>
+                        <li>练习基础算法题</li>
+                    </ul>
+                    <div class="links">
+                        <div class="links-title">推荐资源：</div>
+                        <a href="https://www.runoob.com/git/git-tutorial.html" class="link-item" target="_blank">Git教程</a>
+                        <a href="https://developer.aliyun.com/article/1584777" class="link-item" target="_blank">GitHub仓库教程</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段二 -->
+            <div class="phase">
+                <div class="phase-number">2</div>
+                <div class="phase-content">
+                    <h2 class="phase-title">阶段二：CSP备考 + 深度学习入门</h2>
+                    <p class="phase-desc">刷CSP历年考题提升算法能力，同时开始学习深度学习核心知识。</p>
+                    <ul class="tasks">
+                        <li>刷CSP历年考题（建议做25-40之间的题）</li>
+                        <li>每日2-3题，晚上分享解题思路</li>
+                        <li>学习深度学习基础理论</li>
+                        <li>掌握神经网络、计算机视觉等核心知识</li>
+                        <li>代码及时推送到GitHub</li>
+                    </ul>
+                    <div class="links">
+                        <div class="links-title">推荐资源：</div>
+                        <a href="https://www.cspro.org/" class="link-item" target="_blank">CSP认证网站</a>
+                        <a href="https://www.bilibili.com/video/BV15UREYsEN8/" class="link-item" target="_blank">李沐动手学深度学习</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段三 -->
+            <div class="phase">
+                <div class="phase-number">3</div>
+                <div class="phase-content">
+                    <h2 class="phase-title">阶段三：深度学习项目实践</h2>
+                    <p class="phase-desc">通过实际项目巩固深度学习知识，学习环境搭建和模型训练。</p>
+                    <ul class="tasks">
+                        <li>学习深度学习简单项目</li>
+                        <li>继续深入学习深度学习理论</li>
+                        <li>学习环境搭建</li>
+                        <li>尝试训练自己的模型权重</li>
+                        <li>完成植物分类项目</li>
+                    </ul>
+                    <div class="links">
+                        <div class="links-title">推荐资源：</div>
+                        <a href="https://www.bilibili.com/video/BV1cqR8YaEke/" class="link-item" target="_blank">图像分类系统教程</a>
+                        <a href="https://www.bilibili.com/video/BV1Bj41167JM/" class="link-item" target="_blank">深度学习入门</a>
+                        <a href="https://www.bilibili.com/video/BV13tjqzmEDZ/" class="link-item" target="_blank">项目实战</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段四 -->
+            <div class="phase">
+                <div class="phase-number">4</div>
+                <div class="phase-content">
+                    <h2 class="phase-title">阶段四：项目文档与答辩准备</h2>
+                    <p class="phase-desc">完善项目文档，准备PPT和答辩材料，为比赛做最后冲刺。</p>
+                    <ul class="tasks">
+                        <li>撰写项目文档</li>
+                        <li>制作答辩PPT</li>
+                        <li>准备项目演示网站</li>
+                        <li>完善图像交互功能</li>
+                        <li>模拟答辩演练</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="final-phase">
+            <h2>比赛注意事项</h2>
+            <div class="tips">
+                <h3>文档撰写要点：</h3>
+                <ul>
+                    <li>注意格式统一（图片、表格、文本格式）</li>
+                    <li>逻辑要清晰（每段每节有概括）</li>
+                    <li>层级关系明确，排版对称美观</li>
+                    <li>参考文献80%选取近3年（24-26年）</li>
+                    <li>优先选择SCI 2区或CCF-B以上论文</li>
+                </ul>
+            </div>
+            <div class="tips" style="margin-top: 20px;">
+                <h3>PPT制作要点：</h3>
+                <ul>
+                    <li>避免大段文字，每页不要太满</li>
+                    <li>文字和图片对称排版</li>
+                    <li>不要太多颜色，保持统一风格</li>
+                    <li>避免花哨装饰元素</li>
+                </ul>
+            </div>
+            <div class="tips" style="margin-top: 20px;">
+                <h3>其他提醒：</h3>
+                <ul>
+                    <li>AI生成的内容需要人工审核</li>
+                    <li>关键术语要准确（如"卷积神经网络"）</li>
+                    <li>及时在GitHub打卡提交代码</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
